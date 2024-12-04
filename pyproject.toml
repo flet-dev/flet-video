@@ -7,10 +7,17 @@ authors = [
     { name = "Feodor Fitsner", email = "feodor@appveyor.com" }
 ]
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "flet>=0.25.1",
+]
 
 [tool.setuptools.package-data]
 "flutter.flet_video" = ["**/*"]
+
+[tool.uv]
+dev-dependencies = [
+    "flet[all]>=0.25.1",
+]
 
 [build-system]
 requires = ["setuptools"]
