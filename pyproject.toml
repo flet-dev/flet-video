@@ -1,0 +1,17 @@
+[project]
+name = "flet-video"
+version = "0.1.0"
+description = "Video control for Flet"
+readme = "README.md"
+authors = [
+    { name = "Feodor Fitsner", email = "feodor@appveyor.com" }
+]
+requires-python = ">=3.12"
+dependencies = []
+
+[tool.setuptools.package-data]
+"flutter.flet_video" = ["**/*"]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"

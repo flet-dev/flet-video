@@ -1,0 +1,2 @@
+class VideoShmideo:
+    pass
