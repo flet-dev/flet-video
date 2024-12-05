@@ -6,7 +6,7 @@ stack:
 - python 3.12
 
 install:
-- sh: .ci/update_build_version.sh
+- source .ci/update_build_version.sh
 - python --version
 - python -m ensurepip --upgrade
 - pip3 install --upgrade tomlkit pyyaml
