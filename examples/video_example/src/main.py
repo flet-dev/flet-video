@@ -1,14 +1,3 @@
-# Flet Video control
-
-`Video` control for Flet.
-
-## Usage
-
-Add `flet-video` as dependency (`pyproject.toml` or `requirements.txt`) to your Flet project.
-
-## Example
-
-```py
 import random
 
 import flet as ft
@@ -153,4 +142,3 @@ def main(page: ft.Page):
 
 
 ft.app(main)
-```

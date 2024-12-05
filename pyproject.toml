@@ -1,0 +1,24 @@
+[project]
+name = "flet-video"
+version = "1.0.0"
+description = "Video control for Flet"
+readme = "README.md"
+authors = [
+    { name = "Flet contributors", email = "hello@flet.dev" }
+]
+requires-python = ">=3.8"
+dependencies = [
+    "flet>=0.25.1",
+]
+
+[tool.setuptools.package-data]
+"flutter.flet_video" = ["**/*"]
+
+[tool.uv]
+dev-dependencies = [
+    "flet[all]>=0.25.1",
+]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
