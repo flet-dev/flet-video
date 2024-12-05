@@ -5,7 +5,7 @@ description = ""
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
-  "flet-video @ git+https://github.com/flet-dev/flet-video.git@v1",
+  "flet-video @ git+https://github.com/flet-dev/flet-video.git",
   "flet==0.25.1",
 ]
 

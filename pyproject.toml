@@ -1,6 +1,6 @@
 [project]
 name = "flet-video"
-version = "1.0.0"
+version = "0.1.0"
 description = "Video control for Flet"
 readme = "README.md"
 authors = [

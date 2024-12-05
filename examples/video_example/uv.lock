@@ -301,8 +301,8 @@ wheels = [
 
 [[package]]
 name = "flet-video"
-version = "0.1.0"
-source = { git = "https://github.com/flet-dev/flet-video.git?rev=v1#e029a1ced104662ca2422e30555ef5d8fd684d72" }
+version = "1.0.0"
+source = { git = "https://github.com/flet-dev/flet-video.git#af8b3d9e2bc4d9cb18a394a74f6a82aca7860f80" }
 dependencies = [
     { name = "flet" },
 ]
@@ -962,7 +962,7 @@ wheels = [
 
 [[package]]
 name = "video-example"
-version = "0.1.0"
+version = "1.0.0"
 source = { virtual = "." }
 dependencies = [
     { name = "flet" },
@@ -977,7 +977,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "flet", specifier = "==0.25.1" },
-    { name = "flet-video", git = "https://github.com/flet-dev/flet-video.git?rev=v1" },
+    { name = "flet-video", git = "https://github.com/flet-dev/flet-video.git" },
 ]
 
 [package.metadata.requires-dev]
