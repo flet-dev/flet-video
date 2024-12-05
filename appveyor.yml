@@ -1,10 +1,27 @@
 image: ubuntu
 
+version: '0.1.{build}'
+
 stack:
 - python 3.12
 
 install:
+- sh:
+    if [ -n "$APPVEYOR_REPO_TAG_NAME" ]; then
+      export PKG_VER="${APPVEYOR_REPO_TAG_NAME#v}" # Remove the 'v' prefix
+    else
+      # Get the latest Git tag and handle missing tags gracefully
+      cv=$(git describe --abbrev=0 2>/dev/null || echo "v1.0.0") # Default to v1.0.0 if no tag
+      cv=${cv#v} # Remove the 'v' prefix if present
+      major=$(echo "$cv" | cut -d. -f1)
+      minor=$(echo "$cv" | cut -d. -f2)
+      minor=$((minor + 1))
+      export PKG_VER="${major}.${minor}.0+${APPVEYOR_BUILD_NUMBER}"
+    fi
+    appveyor UpdateBuild -Version $PKG_VER
+
 - curl -LsSf https://astral.sh/uv/install.sh | sh
+- export PATH=$HOME/.local/bin:$PATH
 - uv build
 
 test: off
