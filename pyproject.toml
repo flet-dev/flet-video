@@ -6,6 +6,9 @@ readme = "README.md"
 authors = [
     { name = "Flet contributors", email = "hello@flet.dev" }
 ]
+classifiers = [
+  "License :: OSI Approved :: Apache Software License",
+]
 requires-python = ">=3.8"
 dependencies = [
     "flet>=0.25.1",
@@ -18,6 +21,9 @@ dependencies = [
 dev-dependencies = [
     "flet[all]>=0.25.1",
 ]
+
+[tool.setuptools]
+license-files = []
 
 [build-system]
 requires = ["setuptools"]
