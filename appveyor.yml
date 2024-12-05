@@ -6,7 +6,7 @@ stack:
 - python 3.12
 
 install:
-- sh:
+- sh: |
     if [ -n "$APPVEYOR_REPO_TAG_NAME" ]; then
       export PKG_VER="${APPVEYOR_REPO_TAG_NAME#v}" # Remove the 'v' prefix
     else
