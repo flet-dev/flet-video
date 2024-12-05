@@ -24,7 +24,7 @@ install:
     appveyor UpdateBuild -Version $BUILD_VER
 
 - python --version
-- pip install --upgrade tomlkit pyaml
+- pip install --upgrade tomlkit pyyaml
 - curl -LsSf https://astral.sh/uv/install.sh | sh
 - export PATH=$HOME/.local/bin:$PATH
 
