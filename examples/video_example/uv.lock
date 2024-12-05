@@ -301,8 +301,8 @@ wheels = [
 
 [[package]]
 name = "flet-video"
-version = "1.0.0"
-source = { git = "https://github.com/flet-dev/flet-video.git#af8b3d9e2bc4d9cb18a394a74f6a82aca7860f80" }
+version = "0.1.0"
+source = { git = "https://github.com/flet-dev/flet-video.git#789f048a514cd78c6f1e38991ab3e6d5cd45449d" }
 dependencies = [
     { name = "flet" },
 ]
