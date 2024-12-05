@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "Feodor Fitsner", email = "feodor@appveyor.com" }
 ]
-requires-python = ">=3.12"
+requires-python = ">=3.8"
 dependencies = [
     "flet>=0.25.1",
 ]
