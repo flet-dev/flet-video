@@ -19,7 +19,7 @@ install:
 
 build_script:
 - python .ci/patch_toml_version.py pyproject.toml $PYPI_VER
-- python .ci/patch_pubspec_version.py src/flutter/flet_video/pubspec.yaml $PKG_VER
+- python .ci/patch_pubspec_version.py src/flutter/flet_*/pubspec.yaml $PKG_VER
 - uv build
 
 deploy_script:
