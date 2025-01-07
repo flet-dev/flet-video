@@ -17,7 +17,7 @@ dependencies:
   media_kit_video: ^1.2.4
   media_kit_libs_video: ^1.0.4
 
-  flet: ^0.25.1
+  flet: ^0.25.2
 
 dev_dependencies:
   flutter_test:
