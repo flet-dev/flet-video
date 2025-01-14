@@ -20,6 +20,7 @@ install:
 build_script:
 - python .ci/patch_toml_version.py pyproject.toml $PYPI_VER
 - python .ci/patch_pubspec_version.py src/flutter/flet_*/pubspec.yaml $PKG_VER
+- (cd src/flutter/* && dart pub get && dart analyze && cd -)
 - uv build
 
 deploy_script:
