@@ -58,20 +58,18 @@ class _VideoControlState extends State<VideoControl> with FletStoreMixin {
 
   void _onError(String? message) {
     debugPrint("Video onError: $message");
-    widget.backend
-        .triggerControlEvent(widget.control.id, "error", message ?? "");
+    widget.backend.triggerControlEvent(widget.control.id, "error", message);
   }
 
   void _onCompleted(String? message) {
   debugPrint("Video onCompleted: $message");
-  widget.backend
-      .triggerControlEvent(widget.control.id, "completed", message ?? "");
+  widget.backend.triggerControlEvent(widget.control.id, "completed", message);
   }
 
   void _onTrackChanged(String? message) {
   debugPrint("Video onTrackChanged: $message");
   widget.backend
-      .triggerControlEvent(widget.control.id, "track_changed", message ?? "");
+        .triggerControlEvent(widget.control.id, "track_changed", message);
   }
 
   @override
@@ -143,14 +141,12 @@ class _VideoControlState extends State<VideoControl> with FletStoreMixin {
             const Color(0xFF000000),
         onEnterFullscreen: widget.control.attrBool("onEnterFullscreen", false)!
             ? () async {
-                widget.backend.triggerControlEvent(
-                    widget.control.id, "enter_fullscreen", "");
+                widget.backend.triggerControlEvent(widget.control.id, "enter_fullscreen");
               }
             : defaultEnterNativeFullscreen,
         onExitFullscreen: widget.control.attrBool("onExitFullscreen", false)!
             ? () async {
-                widget.backend.triggerControlEvent(
-                    widget.control.id, "exit_fullscreen", "");
+                widget.backend.triggerControlEvent(widget.control.id, "exit_fullscreen");
               }
             : defaultExitNativeFullscreen,
       );
