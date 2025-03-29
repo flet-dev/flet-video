@@ -1,6 +1,6 @@
 [project]
 name = "flet-video"
-version = "0.1.0"
+version = "0.1.1"
 description = "Video control for Flet"
 readme = "README.md"
 authors = [
@@ -11,7 +11,7 @@ classifiers = [
 ]
 requires-python = ">=3.8"
 dependencies = [
-    "flet>=0.25.1",
+    "flet>=0.26.0",
 ]
 
 [project.urls]
@@ -25,7 +25,7 @@ Issues = "https://github.com/flet-dev/flet-video/issues"
 
 [tool.uv]
 dev-dependencies = [
-    "flet[all]>=0.25.1",
+    "flet[all]>=0.26.0",
 ]
 
 [tool.setuptools]
