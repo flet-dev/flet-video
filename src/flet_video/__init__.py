@@ -1,6 +1,6 @@
-from flet_video.video import (
+from .video import Video
+from .types import (
     PlaylistMode,
-    Video,
     VideoConfiguration,
     VideoMedia,
     VideoSubtitleConfiguration,

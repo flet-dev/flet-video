@@ -9,9 +9,9 @@ authors = [
 classifiers = [
   "License :: OSI Approved :: Apache Software License",
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dependencies = [
-    "flet>=0.25.1",
+    "flet>=0.70.0",
 ]
 
 [project.urls]
@@ -25,7 +25,7 @@ Issues = "https://github.com/flet-dev/flet-video/issues"
 
 [tool.uv]
 dev-dependencies = [
-    "flet[all]>=0.25.1",
+    "flet[all]>=0.70.0",
 ]
 
 [tool.setuptools]
