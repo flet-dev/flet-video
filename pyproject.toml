@@ -1,6 +1,6 @@
 [project]
 name = "flet-video"
-version = "0.1.0"
+version = "0.2.0"
 description = "Video control for Flet"
 readme = "README.md"
 authors = [
@@ -9,9 +9,9 @@ authors = [
 classifiers = [
   "License :: OSI Approved :: Apache Software License",
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
-    "flet>=0.70.0",
+    "flet",
 ]
 
 [project.urls]
@@ -25,8 +25,21 @@ Issues = "https://github.com/flet-dev/flet-video/issues"
 
 [tool.uv]
 dev-dependencies = [
-    "flet[all]>=0.70.0",
+    "flet",
+    "flet-cli",
+    "flet-desktop",
+    "flet-web",
+    #"mkdocs",
+    #"mkdocs-material",
+    #"mkdocstrings[python]"
+    "pre-commit>=4.2.0",
 ]
+
+[tool.uv.sources]
+flet = { git = "https://github.com/flet-dev/flet", subdirectory = "sdk/python/packages/flet", rev = "v1" }
+flet-cli = { git = "https://github.com/flet-dev/flet", subdirectory = "sdk/python/packages/flet-cli", rev = "v1" }
+flet-desktop = { git = "https://github.com/flet-dev/flet", subdirectory = "sdk/python/packages/flet-desktop", rev = "v1" }
+flet-web = { git = "https://github.com/flet-dev/flet", subdirectory = "sdk/python/packages/flet-web", rev = "v1" }
 
 [tool.setuptools]
 license-files = []

@@ -3,11 +3,12 @@ from dataclasses import field
 from typing import List, Optional
 
 import flet as ft
+
 from .types import (
+    PlaylistMode,
     VideoConfiguration,
     VideoMedia,
     VideoSubtitleConfiguration,
-    PlaylistMode,
 )
 
 __all__ = ["Video"]
@@ -25,7 +26,7 @@ class Video(ft.ConstrainedControl):
 
     playlist: List[VideoMedia] = field(default_factory=list)
     title: str = "Flet Video"
-    fit: ft.ImageFit = ft.ImageFit.CONTAIN
+    fit: ft.BoxFit = ft.BoxFit.CONTAIN
     fill_color: ft.ColorValue = ft.Colors.BLACK
     wakelock: bool = True
     autoplay: bool = False
