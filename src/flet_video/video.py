@@ -26,7 +26,7 @@ class Video(ft.ConstrainedControl):
 
     playlist: List[VideoMedia] = field(default_factory=list)
     title: str = "Flet Video"
-    fit: ft.ImageFit = ft.ImageFit.CONTAIN
+    fit: ft.BoxFit = ft.BoxFit.CONTAIN
     fill_color: ft.ColorValue = ft.Colors.BLACK
     wakelock: bool = True
     autoplay: bool = False

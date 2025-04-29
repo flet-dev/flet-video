@@ -7,33 +7,29 @@ import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 
 Media? parseVideoMedia(dynamic value, [Media? defaultValue]) {
-  if (value == null) return defaultValue;
-  if (value["resource"] != null) {
-    var extras = value["extras"] != null
-        ? (value["extras"] as Map)
-            .map((key, value) => MapEntry(key.toString(), value.toString()))
-        : null;
-    var httpHeaders = value["http_headers"] != null
-        ? (value["http_headers"] as Map)
-            .map((key, value) => MapEntry(key.toString(), value.toString()))
-        : null;
-    return Media(value["resource"], extras: extras, httpHeaders: httpHeaders);
-  }
-  return defaultValue;
+  if (value == null || value["resource"] == null) return defaultValue;
+
+  final extras = (value["extras"] as Map?)?.map(
+        (key, val) => MapEntry(key.toString(), val.toString()),
+  );
+
+  final httpHeaders = (value["http_headers"] as Map?)?.map(
+        (key, val) => MapEntry(key.toString(), val.toString()),
+  );
+
+  return Media(value["resource"], extras: extras, httpHeaders: httpHeaders);
 }
 
 List<Media>? parseVideoMedias(dynamic value, [List<Media>? defaultValue]) {
   if (value == null) return defaultValue;
 
-  List<Media> m = [];
   if (value is List) {
-    m = value.map((e) => parseVideoMedia(e)).nonNulls.toList();
-  } else {
-    if (parseVideoMedia(value) != null) {
-      m.add(parseVideoMedia(value)!);
-    }
+    return value
+        .map((e) => parseVideoMedia(e)).nonNulls.toList();
   }
-  return m;
+
+  final media = parseVideoMedia(value);
+  return media != null ? [media] : defaultValue;
 }
 
 Map<String, dynamic>? parseSubtitleConfiguration(dynamic value, ThemeData theme,

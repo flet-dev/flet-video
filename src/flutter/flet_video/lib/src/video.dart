@@ -14,7 +14,7 @@ class VideoControl extends StatefulWidget {
   State<VideoControl> createState() => _VideoControlState();
 }
 
-class _VideoControlState extends State<VideoControl> with FletStoreMixin {
+class _VideoControlState extends State<VideoControl> {
   late final playerConfig = PlayerConfiguration(
     title: widget.control.getString("title", "Flet Video")!,
     muted: widget.control.getBool("muted", false)!,
