@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:collection/collection.dart';
@@ -54,7 +53,7 @@ Map<String, dynamic>? parseSubtitleConfiguration(dynamic value, ThemeData theme,
             fontWeight: FontWeight.normal,
             backgroundColor: Color(0xaa000000)))!,
     visible: parseBool(value["visible"], true)!,
-    textScaleFactor: parseDouble(value["text_scale_factor"]),
+    textScaler: TextScaler.linear(parseDouble(value["text_scale_factor"], 1)!),
     textAlign: parseTextAlign(value["text_align"], TextAlign.center)!,
     padding: parsePadding(
         value["padding"], const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 24.0))!,
@@ -69,7 +68,7 @@ Map<String, dynamic>? parseSubtitleConfiguration(dynamic value, ThemeData theme,
 }
 
 SubtitleTrack parseSubtitleTrack(
-    AssetSrc assetSrc, String? title, String? language) {
+    AssetSource assetSrc, String? title, String? language) {
   if (assetSrc.isFile) {
     String filePath = assetSrc.path;
     File file = File(filePath);
@@ -90,7 +89,7 @@ VideoControllerConfiguration? parseControllerConfiguration(dynamic value,
         parseBool(value["enable_hardware_acceleration"], true)!,
     width: value["width"],
     height: value["height"],
-    scale: value["scale"],
+    scale: parseDouble(value["scale"], 1.0)!,
   );
 }
 

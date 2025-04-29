@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional, Dict
+from typing import Dict, Optional
 
 import flet as ft
 

@@ -27,9 +27,9 @@ class _VideoControlState extends State<VideoControl> with FletStoreMixin {
   );
 
   late final Player player = Player(configuration: playerConfig);
-  late final videoControllerConfiguration = parseControllerConfiguration(widget
-      .control
-      .get("configuration", const VideoControllerConfiguration()))!;
+  late final videoControllerConfiguration = parseControllerConfiguration(
+      widget.control.get("configuration"),
+      const VideoControllerConfiguration())!;
   late final controller =
       VideoController(player, configuration: videoControllerConfiguration);
 
@@ -142,15 +142,16 @@ class _VideoControlState extends State<VideoControl> with FletStoreMixin {
       PlaylistMode? playlistMode =
           parsePlaylistMode(widget.control.getString("playlist_mode"));
 
-      final double? prevVolume = widget.control.state["volume"];
-      final double? prevPitch = widget.control.state["pitch"];
-      final double? prevPlaybackRate = widget.control.state["playback_rate"];
+      final double? prevVolume = widget.control.getDouble("_volume");
+      final double? prevPitch = widget.control.getDouble("_pitch");
+      final double? prevPlaybackRate =
+          widget.control.getDouble("_playback_rate");
       final bool? prevShufflePlaylist =
-          widget.control.state["shuffle_playlist"];
+          widget.control.getBool("_shuffle_playlist");
       final PlaylistMode? prevPlaylistMode =
-          widget.control.state["playlist_mode"];
+          widget.control.get("_playlist_mode");
       final SubtitleTrack? prevSubtitleTrack =
-          widget.control.state["subtitleTrack"];
+          widget.control.get("_subtitleTrack");
 
       Video? video = Video(
         controller: controller,
@@ -181,32 +182,36 @@ class _VideoControlState extends State<VideoControl> with FletStoreMixin {
             volume != prevVolume &&
             volume >= 0 &&
             volume <= 100) {
-          widget.control.state["volume"] = volume;
+          widget.control.updateProperties({"_volume": volume}, python: false);
           await player.setVolume(volume);
         }
 
         if (pitch != null && pitch != prevPitch) {
-          widget.control.state["pitch"] = pitch;
+          widget.control.updateProperties({"_pitch": pitch}, python: false);
           await player.setPitch(pitch);
         }
 
         if (playbackRate != null && playbackRate != prevPlaybackRate) {
-          widget.control.state["playbackRate"] = playbackRate;
+          widget.control
+              .updateProperties({"_playbackRate": playbackRate}, python: false);
           await player.setRate(playbackRate);
         }
 
         if (shufflePlaylist != null && shufflePlaylist != prevShufflePlaylist) {
-          widget.control.state["shufflePlaylist"] = shufflePlaylist;
+          widget.control.updateProperties({"_shufflePlaylist": shufflePlaylist},
+              python: false);
           await player.setShuffle(shufflePlaylist);
         }
 
         if (playlistMode != null && playlistMode != prevPlaylistMode) {
-          widget.control.state["playlistMode"] = playlistMode;
+          widget.control
+              .updateProperties({"_playlistMode": playlistMode}, python: false);
           await player.setPlaylistMode(playlistMode);
         }
 
         if (subtitleTrack != null && subtitleTrack != prevSubtitleTrack) {
-          widget.control.state["subtitleTrack"] = subtitleTrack;
+          widget.control.updateProperties({"_subtitleTrack": subtitleTrack},
+              python: false);
           await player.setSubtitleTrack(subtitleTrack);
         }
       }();
