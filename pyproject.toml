@@ -6,9 +6,6 @@ readme = "README.md"
 authors = [
     { name = "Flet contributors", email = "hello@flet.dev" }
 ]
-classifiers = [
-  "License :: OSI Approved :: Apache Software License",
-]
 license = "Apache-2.0"
 requires-python = ">=3.10"
 dependencies = [
