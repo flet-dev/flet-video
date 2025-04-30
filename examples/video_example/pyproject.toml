@@ -3,6 +3,7 @@ name = "video_example"
 version = "1.0.0"
 description = ""
 readme = "README.md"
+license = "Apache-2.0"
 requires-python = ">=3.10"
 dependencies = [
   "flet-video",
