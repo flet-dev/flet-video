@@ -109,135 +109,131 @@ class _VideoControlState extends State<VideoControl> {
   Widget build(BuildContext context) {
     debugPrint("Video build: ${widget.control.id}");
 
-    return withPageArgs((context, pageArgs) {
-      SubtitleTrack? subtitleTrack;
-      Map<String, dynamic>? subtitleConfiguration = parseSubtitleConfiguration(
-          widget.control.get("subtitle_configuration"), Theme.of(context));
-      if (subtitleConfiguration?["src"] != null) {
-        try {
-          var assetSrc = getAssetSrc(subtitleConfiguration?["src"],
-              pageArgs.pageUri!, pageArgs.assetsDir);
-          subtitleTrack = parseSubtitleTrack(
-              assetSrc,
-              subtitleConfiguration?["title"],
-              subtitleConfiguration?["language"]);
-        } catch (ex) {
-          _onError(ex.toString());
-          subtitleTrack = SubtitleTrack.no();
-        }
+    SubtitleTrack? subtitleTrack;
+    Map<String, dynamic>? subtitleConfiguration = parseSubtitleConfiguration(
+        widget.control.get("subtitle_configuration"), Theme.of(context));
+    if (subtitleConfiguration?["src"] != null) {
+      try {
+        var assetSrc = widget.control.backend
+            .getAssetSource(subtitleConfiguration?["src"]);
+        subtitleTrack = parseSubtitleTrack(
+            assetSrc,
+            subtitleConfiguration?["title"],
+            subtitleConfiguration?["language"]);
+      } catch (ex) {
+        _onError(ex.toString());
+        subtitleTrack = SubtitleTrack.no();
+      }
+    }
+
+    SubtitleViewConfiguration? subtitleViewConfiguration =
+        subtitleConfiguration?["subtitleViewConfiguration"];
+
+    bool onError = widget.control.getBool("on_error", false)!;
+    bool onCompleted = widget.control.getBool("on_completed", false)!;
+    bool onTrackChanged = widget.control.getBool("on_track_changed", false)!;
+
+    double? volume = widget.control.getDouble("volume");
+    double? pitch = widget.control.getDouble("pitch");
+    double? playbackRate = widget.control.getDouble("playback_rate");
+    bool? shufflePlaylist = widget.control.getBool("shuffle_playlist");
+    bool? showControls = widget.control.getBool("show_controls", true)!;
+    PlaylistMode? playlistMode =
+        parsePlaylistMode(widget.control.getString("playlist_mode"));
+
+    final double? prevVolume = widget.control.getDouble("_volume");
+    final double? prevPitch = widget.control.getDouble("_pitch");
+    final double? prevPlaybackRate = widget.control.getDouble("_playback_rate");
+    final bool? prevShufflePlaylist =
+        widget.control.getBool("_shuffle_playlist");
+    final PlaylistMode? prevPlaylistMode = widget.control.get("_playlist_mode");
+    final SubtitleTrack? prevSubtitleTrack =
+        widget.control.get("_subtitleTrack");
+
+    Video? video = Video(
+      controller: controller,
+      wakelock: widget.control.getBool("wakelock", true)!,
+      controls: showControls ? AdaptiveVideoControls : null,
+      pauseUponEnteringBackgroundMode:
+          widget.control.getBool("pause_upon_entering_background_mode", true)!,
+      resumeUponEnteringForegroundMode: widget.control
+          .getBool("resume_upon_entering_foreground_mode", false)!,
+      alignment: widget.control.getAlignment("alignment", Alignment.center)!,
+      fit: widget.control.getBoxFit("fit", BoxFit.contain)!,
+      filterQuality:
+          widget.control.getFilterQuality("filter_quality", FilterQuality.low)!,
+      subtitleViewConfiguration:
+          subtitleViewConfiguration ?? const SubtitleViewConfiguration(),
+      fill: widget.control
+          .getColor("fill_color", context, const Color(0xFF000000))!,
+      onEnterFullscreen: widget.control.getBool("on_enter_fullscreen", false)!
+          ? () async => widget.control.triggerEvent("enter_fullscreen")
+          : defaultEnterNativeFullscreen,
+      onExitFullscreen: widget.control.getBool("on_exit_fullscreen", false)!
+          ? () async => widget.control.triggerEvent("exit_fullscreen")
+          : defaultExitNativeFullscreen,
+    );
+
+    () async {
+      if (volume != null &&
+          volume != prevVolume &&
+          volume >= 0 &&
+          volume <= 100) {
+        widget.control.updateProperties({"_volume": volume}, python: false);
+        await player.setVolume(volume);
       }
 
-      SubtitleViewConfiguration? subtitleViewConfiguration =
-          subtitleConfiguration?["subtitleViewConfiguration"];
+      if (pitch != null && pitch != prevPitch) {
+        widget.control.updateProperties({"_pitch": pitch}, python: false);
+        await player.setPitch(pitch);
+      }
 
-      bool onError = widget.control.getBool("on_error", false)!;
-      bool onCompleted = widget.control.getBool("on_completed", false)!;
-      bool onTrackChanged = widget.control.getBool("on_track_changed", false)!;
+      if (playbackRate != null && playbackRate != prevPlaybackRate) {
+        widget.control
+            .updateProperties({"_playbackRate": playbackRate}, python: false);
+        await player.setRate(playbackRate);
+      }
 
-      double? volume = widget.control.getDouble("volume");
-      double? pitch = widget.control.getDouble("pitch");
-      double? playbackRate = widget.control.getDouble("playback_rate");
-      bool? shufflePlaylist = widget.control.getBool("shuffle_playlist");
-      bool? showControls = widget.control.getBool("show_controls", true)!;
-      PlaylistMode? playlistMode =
-          parsePlaylistMode(widget.control.getString("playlist_mode"));
+      if (shufflePlaylist != null && shufflePlaylist != prevShufflePlaylist) {
+        widget.control.updateProperties({"_shufflePlaylist": shufflePlaylist},
+            python: false);
+        await player.setShuffle(shufflePlaylist);
+      }
 
-      final double? prevVolume = widget.control.getDouble("_volume");
-      final double? prevPitch = widget.control.getDouble("_pitch");
-      final double? prevPlaybackRate =
-          widget.control.getDouble("_playback_rate");
-      final bool? prevShufflePlaylist =
-          widget.control.getBool("_shuffle_playlist");
-      final PlaylistMode? prevPlaylistMode =
-          widget.control.get("_playlist_mode");
-      final SubtitleTrack? prevSubtitleTrack =
-          widget.control.get("_subtitleTrack");
+      if (playlistMode != null && playlistMode != prevPlaylistMode) {
+        widget.control
+            .updateProperties({"_playlistMode": playlistMode}, python: false);
+        await player.setPlaylistMode(playlistMode);
+      }
 
-      Video? video = Video(
-        controller: controller,
-        wakelock: widget.control.getBool("wakelock", true)!,
-        controls: showControls ? AdaptiveVideoControls : null,
-        pauseUponEnteringBackgroundMode: widget.control
-            .getBool("pause_upon_entering_background_mode", true)!,
-        resumeUponEnteringForegroundMode: widget.control
-            .getBool("resume_upon_entering_foreground_mode", false)!,
-        alignment: widget.control.getAlignment("alignment", Alignment.center)!,
-        fit: widget.control.getBoxFit("fit", BoxFit.contain)!,
-        filterQuality: widget.control
-            .getFilterQuality("filter_quality", FilterQuality.low)!,
-        subtitleViewConfiguration:
-            subtitleViewConfiguration ?? const SubtitleViewConfiguration(),
-        fill: widget.control
-            .getColor("fill_color", context, const Color(0xFF000000))!,
-        onEnterFullscreen: widget.control.getBool("on_enter_fullscreen", false)!
-            ? () async => widget.control.triggerEvent("enter_fullscreen")
-            : defaultEnterNativeFullscreen,
-        onExitFullscreen: widget.control.getBool("on_exit_fullscreen", false)!
-            ? () async => widget.control.triggerEvent("exit_fullscreen")
-            : defaultExitNativeFullscreen,
-      );
+      if (subtitleTrack != null && subtitleTrack != prevSubtitleTrack) {
+        widget.control
+            .updateProperties({"_subtitleTrack": subtitleTrack}, python: false);
+        await player.setSubtitleTrack(subtitleTrack);
+      }
+    }();
 
-      () async {
-        if (volume != null &&
-            volume != prevVolume &&
-            volume >= 0 &&
-            volume <= 100) {
-          widget.control.updateProperties({"_volume": volume}, python: false);
-          await player.setVolume(volume);
-        }
-
-        if (pitch != null && pitch != prevPitch) {
-          widget.control.updateProperties({"_pitch": pitch}, python: false);
-          await player.setPitch(pitch);
-        }
-
-        if (playbackRate != null && playbackRate != prevPlaybackRate) {
-          widget.control
-              .updateProperties({"_playbackRate": playbackRate}, python: false);
-          await player.setRate(playbackRate);
-        }
-
-        if (shufflePlaylist != null && shufflePlaylist != prevShufflePlaylist) {
-          widget.control.updateProperties({"_shufflePlaylist": shufflePlaylist},
-              python: false);
-          await player.setShuffle(shufflePlaylist);
-        }
-
-        if (playlistMode != null && playlistMode != prevPlaylistMode) {
-          widget.control
-              .updateProperties({"_playlistMode": playlistMode}, python: false);
-          await player.setPlaylistMode(playlistMode);
-        }
-
-        if (subtitleTrack != null && subtitleTrack != prevSubtitleTrack) {
-          widget.control.updateProperties({"_subtitleTrack": subtitleTrack},
-              python: false);
-          await player.setSubtitleTrack(subtitleTrack);
-        }
-      }();
-
-      // listen to errors
-      player.stream.error.listen((event) {
-        if (onError) {
-          widget.control.triggerEvent("error", event);
-        }
-      });
-
-      // listen to completion
-      player.stream.completed.listen((event) {
-        if (onCompleted) {
-          widget.control.triggerEvent("completed", event);
-        }
-      });
-
-      // listen to track changes
-      player.stream.playlist.listen((event) {
-        if (onTrackChanged) {
-          widget.control.triggerEvent("track_changed", event.index);
-        }
-      });
-
-      return ConstrainedControl(control: widget.control, child: video);
+    // listen to errors
+    player.stream.error.listen((event) {
+      if (onError) {
+        widget.control.triggerEvent("error", event);
+      }
     });
+
+    // listen to completion
+    player.stream.completed.listen((event) {
+      if (onCompleted) {
+        widget.control.triggerEvent("completed", event);
+      }
+    });
+
+    // listen to track changes
+    player.stream.playlist.listen((event) {
+      if (onTrackChanged) {
+        widget.control.triggerEvent("track_changed", event.index);
+      }
+    });
+
+    return ConstrainedControl(control: widget.control, child: video);
   }
 }
