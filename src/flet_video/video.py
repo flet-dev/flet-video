@@ -33,25 +33,28 @@ class Video(ft.ConstrainedControl):
     show_controls: bool = True
     muted: bool = False
     playlist_mode: Optional[PlaylistMode] = None
-    shuffle_playlist: Optional[bool] = None
-    volume: ft.OptionalNumber = None
-    playback_rate: ft.OptionalNumber = None
+    shuffle_playlist: bool = False
+    volume: ft.Number = 100.0
+    playback_rate: ft.Number = 1.0
     alignment: ft.Alignment = field(default_factory=lambda: ft.Alignment.center())
     filter_quality: ft.FilterQuality = ft.FilterQuality.LOW
     pause_upon_entering_background_mode: bool = True
     resume_upon_entering_foreground_mode: bool = False
-    aspect_ratio: ft.OptionalNumber = None
-    pitch: ft.OptionalNumber = None
+    pitch: ft.Number = 1.0
     configuration: VideoConfiguration = field(default_factory=VideoConfiguration)
     subtitle_configuration: VideoSubtitleConfiguration = field(
         default_factory=VideoSubtitleConfiguration
     )
-    on_loaded: ft.OptionalControlEventCallable = None
+    on_load: ft.OptionalControlEventCallable = None
     on_enter_fullscreen: ft.OptionalControlEventCallable = None
     on_exit_fullscreen: ft.OptionalControlEventCallable = None
     on_error: ft.OptionalControlEventCallable = None
-    on_completed: ft.OptionalControlEventCallable = None
-    on_track_changed: ft.OptionalControlEventCallable = None
+    on_complete: ft.OptionalControlEventCallable = None
+    on_track_change: ft.OptionalControlEventCallable = None
+
+    def before_update(self):
+        super().before_update()
+        assert 0 <= self.volume <= 100, "volume must be between 0 and 100 inclusive"
 
     def play(self):
         asyncio.create_task(self.play_async())
@@ -118,9 +121,7 @@ class Video(ft.ConstrainedControl):
 
     async def playlist_remove_async(self, media_index: int):
         assert self.playlist[media_index], "index out of range"
-        await self._invoke_method_async(
-            "playlist_remove", {"media_index": str(media_index)}
-        )
+        await self._invoke_method_async("playlist_remove", {"media_index": media_index})
         self.playlist.pop(media_index)
 
     async def is_playing_async(self) -> bool:
@@ -129,8 +130,8 @@ class Video(ft.ConstrainedControl):
     async def is_completed_async(self) -> bool:
         return await self._invoke_method_async("is_completed")
 
-    async def get_duration_async(self) -> Optional[int]:
+    async def get_duration_async(self) -> ft.Duration:
         return await self._invoke_method_async("get_duration")
 
-    async def get_current_position_async(self) -> Optional[int]:
+    async def get_current_position_async(self) -> ft.Duration:
         return await self._invoke_method_async("get_current_position")

@@ -14,16 +14,14 @@ class VideoControl extends StatefulWidget {
   State<VideoControl> createState() => _VideoControlState();
 }
 
-class _VideoControlState extends State<VideoControl> {
+class _VideoControlState extends State<VideoControl> with FletStoreMixin {
   late final playerConfig = PlayerConfiguration(
     title: widget.control.getString("title", "Flet Video")!,
     muted: widget.control.getBool("muted", false)!,
     pitch: widget.control.getDouble("pitch") != null ? true : false,
-    ready: () {
-      if (widget.control.getBool("on_loaded", false)!) {
-        widget.control.triggerEvent("loaded");
-      }
-    },
+    ready: widget.control.getBool("on_loaded", false)!
+        ? () => widget.control.triggerEvent("loaded")
+        : null,
   );
 
   late final Player player = Player(configuration: playerConfig);
@@ -49,7 +47,9 @@ class _VideoControlState extends State<VideoControl> {
   }
 
   void _onError(String? message) {
-    widget.control.triggerEvent("error", message);
+    if (widget.control.getBool("on_error", false)!) {
+      widget.control.triggerEvent("error", message);
+    }
   }
 
   Future<dynamic> _invokeMethod(String name, dynamic args) async {
@@ -81,25 +81,25 @@ class _VideoControlState extends State<VideoControl> {
         await player.previous();
         break;
       case "jump_to":
-        await player.jump(parseInt(args["media_index"], 0)!);
+        final mediaIndex = parseInt(args["media_index"]);
+        if (mediaIndex != null) await player.jump(mediaIndex);
         break;
       case "playlist_add":
         var media = parseVideoMedia(args["media"]);
-        if (media != null) {
-          await player.add(media);
-        }
+        if (media != null) await player.add(media);
         break;
       case "playlist_remove":
-        await player.remove(parseInt(args["media_index"], 0)!);
+        final mediaIndex = parseInt(args["media_index"]);
+        if (mediaIndex != null) await player.remove(mediaIndex);
         break;
       case "is_playing":
         return player.state.playing;
       case "is_completed":
         return player.state.completed;
       case "get_duration":
-        return player.state.duration.inMilliseconds;
+        return player.state.duration;
       case "get_current_position":
-        return player.state.position.inMilliseconds;
+        return player.state.position;
       default:
         throw Exception("Unknown Video method: $name");
     }
@@ -129,28 +129,23 @@ class _VideoControlState extends State<VideoControl> {
     SubtitleViewConfiguration? subtitleViewConfiguration =
         subtitleConfiguration?["subtitleViewConfiguration"];
 
-    bool onError = widget.control.getBool("on_error", false)!;
-    bool onCompleted = widget.control.getBool("on_completed", false)!;
-    bool onTrackChanged = widget.control.getBool("on_track_changed", false)!;
-
-    double? volume = widget.control.getDouble("volume");
-    double? pitch = widget.control.getDouble("pitch");
-    double? playbackRate = widget.control.getDouble("playback_rate");
-    bool? shufflePlaylist = widget.control.getBool("shuffle_playlist");
-    bool? showControls = widget.control.getBool("show_controls", true)!;
-    PlaylistMode? playlistMode =
+    var volume = widget.control.getDouble("volume");
+    var pitch = widget.control.getDouble("pitch");
+    var playbackRate = widget.control.getDouble("playback_rate");
+    var shufflePlaylist = widget.control.getBool("shuffle_playlist");
+    var showControls = widget.control.getBool("show_controls", true)!;
+    var playlistMode =
         parsePlaylistMode(widget.control.getString("playlist_mode"));
 
-    final double? prevVolume = widget.control.getDouble("_volume");
-    final double? prevPitch = widget.control.getDouble("_pitch");
-    final double? prevPlaybackRate = widget.control.getDouble("_playback_rate");
-    final bool? prevShufflePlaylist =
-        widget.control.getBool("_shuffle_playlist");
+    final prevVolume = widget.control.getDouble("_volume");
+    final prevPitch = widget.control.getDouble("_pitch");
+    final prevPlaybackRate = widget.control.getDouble("_playback_rate");
+    final prevShufflePlaylist = widget.control.getBool("_shuffle_playlist");
     final PlaylistMode? prevPlaylistMode = widget.control.get("_playlist_mode");
     final SubtitleTrack? prevSubtitleTrack =
         widget.control.get("_subtitleTrack");
 
-    Video? video = Video(
+    Video video = Video(
       controller: controller,
       wakelock: widget.control.getBool("wakelock", true)!,
       controls: showControls ? AdaptiveVideoControls : null,
@@ -164,8 +159,7 @@ class _VideoControlState extends State<VideoControl> {
           widget.control.getFilterQuality("filter_quality", FilterQuality.low)!,
       subtitleViewConfiguration:
           subtitleViewConfiguration ?? const SubtitleViewConfiguration(),
-      fill: widget.control
-          .getColor("fill_color", context, const Color(0xFF000000))!,
+      fill: widget.control.getColor("fill_color", context, Colors.black)!,
       onEnterFullscreen: widget.control.getBool("on_enter_fullscreen", false)!
           ? () async => widget.control.triggerEvent("enter_fullscreen")
           : defaultEnterNativeFullscreen,
@@ -213,24 +207,26 @@ class _VideoControlState extends State<VideoControl> {
       }
     }();
 
+    // listen to volume changes
+    player.stream.volume
+        .listen((v) => widget.control.updateProperties({"volume": v}));
+
     // listen to errors
     player.stream.error.listen((event) {
-      if (onError) {
-        widget.control.triggerEvent("error", event);
-      }
+      _onError(event);
     });
 
     // listen to completion
     player.stream.completed.listen((event) {
-      if (onCompleted) {
-        widget.control.triggerEvent("completed", event);
+      if (widget.control.getBool("on_complete", false)!) {
+        widget.control.triggerEvent("complete", event);
       }
     });
 
     // listen to track changes
     player.stream.playlist.listen((event) {
-      if (onTrackChanged) {
-        widget.control.triggerEvent("track_changed", event.index);
+      if (widget.control.getBool("on_track_change", false)!) {
+        widget.control.triggerEvent("track_change", event.index);
       }
     });
 
