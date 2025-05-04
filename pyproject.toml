@@ -1,6 +1,6 @@
 [project]
 name = "flet-video"
-version = "0.1.0"
+version = "0.2.0"
 description = "Video control for Flet"
 readme = "README.md"
 authors = [
@@ -26,6 +26,10 @@ dev-dependencies = [
     "flet",
     "flet-cli",
     "flet-desktop",
+    #"mkdocs",
+    #"mkdocs-material",
+    #"mkdocstrings[python]"
+    "pre-commit>=4.2.0",
 ]
 
 [tool.uv.sources]
