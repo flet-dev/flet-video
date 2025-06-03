@@ -3,13 +3,6 @@ from .types import (
     VideoConfiguration,
     VideoMedia,
     VideoSubtitleConfiguration,
+    VideoSubtitleTrack,
 )
 from .video import Video
-
-__all__ = [
-    "Video",
-    "PlaylistMode",
-    "VideoConfiguration",
-    "VideoMedia",
-    "VideoSubtitleConfiguration",
-]

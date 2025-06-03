@@ -1,20 +1,20 @@
-import 'dart:io';
-
 import 'package:collection/collection.dart';
 import 'package:flet/flet.dart';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 
+import "file_utils_web.dart" if (dart.library.io) 'file_utils_io.dart';
+
 Media? parseVideoMedia(dynamic value, [Media? defaultValue]) {
   if (value == null || value["resource"] == null) return defaultValue;
 
   final extras = (value["extras"] as Map?)?.map(
-        (key, val) => MapEntry(key.toString(), val.toString()),
+    (key, val) => MapEntry(key.toString(), val.toString()),
   );
 
   final httpHeaders = (value["http_headers"] as Map?)?.map(
-        (key, val) => MapEntry(key.toString(), val.toString()),
+    (key, val) => MapEntry(key.toString(), val.toString()),
   );
 
   return Media(value["resource"], extras: extras, httpHeaders: httpHeaders);
@@ -24,19 +24,19 @@ List<Media>? parseVideoMedias(dynamic value, [List<Media>? defaultValue]) {
   if (value == null) return defaultValue;
 
   if (value is List) {
-    return value
-        .map((e) => parseVideoMedia(e)).nonNulls.toList();
+    return value.map((e) => parseVideoMedia(e)).nonNulls.toList();
   }
 
   final media = parseVideoMedia(value);
   return media != null ? [media] : defaultValue;
 }
 
-Map<String, dynamic>? parseSubtitleConfiguration(dynamic value, ThemeData theme,
-    [Map<String, dynamic>? defaultValue]) {
+SubtitleViewConfiguration? parseSubtitleConfiguration(
+    dynamic value, ThemeData theme,
+    [SubtitleViewConfiguration? defaultValue]) {
   if (value == null) return defaultValue;
 
-  SubtitleViewConfiguration configuration = SubtitleViewConfiguration(
+  return SubtitleViewConfiguration(
     style: parseTextStyle(
         value["text_style"],
         theme,
@@ -54,25 +54,63 @@ Map<String, dynamic>? parseSubtitleConfiguration(dynamic value, ThemeData theme,
     padding: parsePadding(
         value["padding"], const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 24.0))!,
   );
-
-  return <String, dynamic>{
-    "src": value["src"],
-    "title": value["title"],
-    "language": value["language"],
-    "subtitleViewConfiguration": configuration
-  };
 }
 
-SubtitleTrack parseSubtitleTrack(
-    AssetSource assetSrc, String? title, String? language) {
-  if (assetSrc.isFile) {
-    String filePath = assetSrc.path;
-    File file = File(filePath);
-    String content = file.readAsStringSync();
-    return SubtitleTrack.data(content, title: title, language: language);
+bool isUrl(String value) {
+  final urlPattern = RegExp(r'^(http:\/\/|https:\/\/|www\.)');
+  return urlPattern.hasMatch(value);
+}
+
+SubtitleTrack? parseSubtitleTrack(
+  dynamic value,
+  BuildContext context, [
+  SubtitleTrack? defaultValue,
+]) {
+  if (value == null) return defaultValue;
+
+  String src;
+  final String rawSrc = value["src"] as String;
+  if (rawSrc == "none") return SubtitleTrack.no();
+  if (rawSrc == "auto") return SubtitleTrack.auto();
+
+  bool uri = false;
+
+  if (isUrl(rawSrc)) {
+    uri = true;
+    src = rawSrc;
   } else {
-    return SubtitleTrack.uri(assetSrc.path, title: title, language: language);
+    // Non-URL: on non-web platforms, try reading it as a file path
+    String? fileContents;
+    if (!isWebPlatform()) {
+      // todo: add support for relative paths to assets-dir
+      fileContents = readFileAsStringIfExists(rawSrc);
+    }
+
+    // If reading succeeded, use the file’s contents;
+    // otherwise assume rawSrc is already subtitle text
+    src = fileContents ?? rawSrc;
+    uri = false;
   }
+
+  return SubtitleTrack(
+    src,
+    value["title"],
+    value["language"],
+    channelscount: parseInt(value["channels_count"]),
+    channels: value["channels"],
+    samplerate: parseInt(value["sample_rate"]),
+    fps: parseDouble(value["fps"]),
+    bitrate: parseInt(value["bitrate"]),
+    rotate: parseInt(value["rotate"]),
+    par: parseDouble(value["par"]),
+    audiochannels: parseInt(value["audio_channels"]),
+    albumart: parseBool(value["album_art"]),
+    codec: value["codec"],
+    decoder: value["decoder"],
+    data: !uri,
+    // true when providing raw subtitle text
+    uri: uri, // true when providing a URL
+  );
 }
 
 VideoControllerConfiguration? parseControllerConfiguration(dynamic value,

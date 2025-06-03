@@ -16,7 +16,7 @@ class VideoControl extends StatefulWidget {
 
 class _VideoControlState extends State<VideoControl> with FletStoreMixin {
   late final playerConfig = PlayerConfiguration(
-    title: widget.control.getString("title", "Flet Video")!,
+    title: widget.control.getString("title", "flet-video")!,
     muted: widget.control.getBool("muted", false)!,
     pitch: widget.control.getDouble("pitch") != null ? true : false,
     ready: widget.control.getBool("on_loaded", false)!
@@ -107,27 +107,14 @@ class _VideoControlState extends State<VideoControl> with FletStoreMixin {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint("Video build: ${widget.control.id}");
+    debugPrint("Video XXX build: ${widget.control.id}");
 
-    SubtitleTrack? subtitleTrack;
-    Map<String, dynamic>? subtitleConfiguration = parseSubtitleConfiguration(
-        widget.control.get("subtitle_configuration"), Theme.of(context));
-    if (subtitleConfiguration?["src"] != null) {
-      try {
-        var assetSrc = widget.control.backend
-            .getAssetSource(subtitleConfiguration?["src"]);
-        subtitleTrack = parseSubtitleTrack(
-            assetSrc,
-            subtitleConfiguration?["title"],
-            subtitleConfiguration?["language"]);
-      } catch (ex) {
-        _onError(ex.toString());
-        subtitleTrack = SubtitleTrack.no();
-      }
-    }
-
-    SubtitleViewConfiguration? subtitleViewConfiguration =
-        subtitleConfiguration?["subtitleViewConfiguration"];
+    var subtitleConfiguration = parseSubtitleConfiguration(
+        widget.control.get("subtitle_configuration"),
+        Theme.of(context),
+        const SubtitleViewConfiguration())!;
+    var subtitleTrack =
+        parseSubtitleTrack(widget.control.get("subtitle_track"), context);
 
     var volume = widget.control.getDouble("volume");
     var pitch = widget.control.getDouble("pitch");
@@ -137,6 +124,7 @@ class _VideoControlState extends State<VideoControl> with FletStoreMixin {
     var playlistMode =
         parsePlaylistMode(widget.control.getString("playlist_mode"));
 
+    // previous values
     final prevVolume = widget.control.getDouble("_volume");
     final prevPitch = widget.control.getDouble("_pitch");
     final prevPlaybackRate = widget.control.getDouble("_playback_rate");
@@ -157,8 +145,7 @@ class _VideoControlState extends State<VideoControl> with FletStoreMixin {
       fit: widget.control.getBoxFit("fit", BoxFit.contain)!,
       filterQuality:
           widget.control.getFilterQuality("filter_quality", FilterQuality.low)!,
-      subtitleViewConfiguration:
-          subtitleViewConfiguration ?? const SubtitleViewConfiguration(),
+      subtitleViewConfiguration: subtitleConfiguration,
       fill: widget.control.getColor("fill_color", context, Colors.black)!,
       onEnterFullscreen: widget.control.getBool("on_enter_fullscreen", false)!
           ? () async => widget.control.triggerEvent("enter_fullscreen")
@@ -206,10 +193,6 @@ class _VideoControlState extends State<VideoControl> with FletStoreMixin {
         await player.setSubtitleTrack(subtitleTrack);
       }
     }();
-
-    // listen to volume changes
-    player.stream.volume
-        .listen((v) => widget.control.updateProperties({"volume": v}));
 
     // listen to errors
     player.stream.error.listen((event) {

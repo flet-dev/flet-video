@@ -9,37 +9,133 @@ __all__ = [
     "VideoMedia",
     "VideoConfiguration",
     "VideoSubtitleConfiguration",
+    "VideoSubtitleTrack",
 ]
 
 
 class PlaylistMode(Enum):
+    """Defines the playback mode for the video playlist."""
+
     NONE = "none"
+    """End playback once end of the playlist is reached."""
+
     SINGLE = "single"
+    """Indefinitely loop over the currently playing file in the playlist."""
+
     LOOP = "loop"
+    """Loop over the playlist & restart it from beginning once end is reached."""
 
 
 @dataclass
 class VideoMedia:
+    """Represents a media resource for video playback."""
+
     resource: str
+    """URI of the media resource."""
+
     http_headers: Optional[Dict[str, str]] = None
+    """HTTP headers to be used for the media resource."""
+
     extras: Optional[Dict[str, str]] = None
+    """Additional metadata for the media resource."""
 
 
 @dataclass
 class VideoConfiguration:
-    output_driver: ft.OptionalString = None
-    hardware_decoding_api: ft.OptionalString = None
+    """Additional configuration for video playback."""
+
+    output_driver: Optional[str] = None
+    """
+    Sets the [--vo](https://mpv.io/manual/stable/#options-vo) property on native backend.
+    
+    The default value is platform dependent:
+        - Windows, GNU/Linux, macOS & iOS : `"libmpv"`
+        - Android: `"gpu"`
+    """
+
+    hardware_decoding_api: Optional[str] = None
+    """
+    Sets the [--hwdec](https://mpv.io/manual/stable/#options-hwdec) property on native backend.
+    
+    The default value is platform dependent:
+        - Windows, GNU/Linux, macOS & iOS : `"auto"`
+        - Android: `"auto-safe"`
+    """
+
     enable_hardware_acceleration: bool = True
+    """
+    Whether to enable hardware acceleration.
+    When disabled, may cause battery drain, device heating, and high CPU usage.
+    
+    Defaults to `True`.
+    """
+
     width: ft.OptionalNumber = None
+    """
+    The fixed width for the video output.
+    """
+
     height: ft.OptionalNumber = None
-    scale: ft.OptionalNumber = None
+    """
+    The fixed height for the video output.
+    """
+
+    scale: ft.OptionalNumber = 1.0
+    """
+    The scale for the video output. 
+    Specifying this option will cause `width` & `height` to be ignored.
+    
+    Defaults to `1.0`.
+    """
+
+
+@dataclass
+class VideoSubtitleTrack:
+    """Represents a subtitle track for a video."""
+
+    src: str
+    """
+    The subtitle source. 
+    
+    Must be one of:
+        - A URL (e.g. "https://example.com/subs.srt" or "www.example.com/sub.vtt")
+        - An absolute local file path (not supported on the web platform)
+        - A raw subtitle text string (e.g. the full contents of an SRT/VTT file)
+    """
+
+    title: Optional[str] = None
+    """The title of the subtitle track, e.g. 'English'."""
+
+    language: Optional[str] = None
+    """The language of the subtitle track, e.g. 'en'."""
+
+    channels_count: Optional[int] = None
+    channels: Optional[str] = None
+    sample_rate: Optional[int] = None
+    fps: ft.OptionalNumber = None
+    bitrate: Optional[int] = None
+    rotate: Optional[int] = None
+    par: ft.OptionalNumber = None
+    audio_channels: Optional[int] = None
+    album_art: Optional[bool] = None
+    codec: Optional[str] = None
+    decoder: Optional[str] = None
+
+    @classmethod
+    def none(cls) -> "VideoSubtitleTrack":
+        """No subtitle track. Disables subtitle output."""
+        return VideoSubtitleTrack(src="none")
+
+    @classmethod
+    def auto(cls) -> "VideoSubtitleTrack":
+        """Default subtitle track. Selects the first subtitle track."""
+        return VideoSubtitleTrack(src="auto")
 
 
 @dataclass
 class VideoSubtitleConfiguration:
-    src: ft.OptionalString = None
-    title: ft.OptionalString = None
-    language: ft.OptionalString = None
+    """Represents the configuration for video subtitles."""
+
     text_style: ft.TextStyle = field(
         default_factory=lambda: ft.TextStyle(
             height=1.4,
@@ -51,9 +147,34 @@ class VideoSubtitleConfiguration:
             bgcolor=ft.Colors.BLACK54,
         )
     )
-    text_scale_factor: ft.OptionalNumber = None
+    """The text style to be used for the subtitles."""
+
+    text_scale_factor: ft.OptionalNumber = 1.0
+    """
+    Defines the scale factor for the subtitle text.
+    
+    Defaults to `1.0`.
+    """
+
     text_align: ft.TextAlign = ft.TextAlign.CENTER
+    """
+    The text alignment to be used for the subtitles.
+    
+    Defaults to `ft.TextAlign.CENTER`.
+    """
+
     padding: ft.PaddingValue = field(
         default_factory=lambda: ft.Padding(left=16.0, top=0.0, right=16.0, bottom=24.0)
     )
+    """
+    The padding to be used for the subtitles.
+    
+    Defaults to `ft.Padding(left=16.0, top=0.0, right=16.0, bottom=24.0)`.
+    """
+
     visible: bool = True
+    """
+    Whether the subtitles should be visible or not.
+    
+    Defaults to `True`.
+    """
