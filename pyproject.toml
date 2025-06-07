@@ -21,21 +21,23 @@ Issues = "https://github.com/flet-dev/flet-video/issues"
 [tool.setuptools.package-data]
 "flutter.flet_video" = ["**/*"]
 
-[tool.uv]
-dev-dependencies = [
-    "flet",
-    "flet-cli",
-    "flet-desktop",
-    #"mkdocs",
-    #"mkdocs-material",
-    #"mkdocstrings[python]"
+[dependency-groups]
+dev = [
     "pre-commit>=4.2.0",
+]
+docs = [
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocstrings[python]",
+    "mike",
+    "markdown>=3.6",
+    "pymdown-extensions",
+    "mkdocs-glightbox",
+    "pygments>=2.16",
 ]
 
 [tool.uv.sources]
 flet = { git = "https://github.com/flet-dev/flet", subdirectory = "sdk/python/packages/flet", rev = "v1" }
-flet-cli = { git = "https://github.com/flet-dev/flet", subdirectory = "sdk/python/packages/flet-cli", rev = "v1" }
-flet-desktop = { git = "https://github.com/flet-dev/flet", subdirectory = "sdk/python/packages/flet-desktop", rev = "v1" }
 
 [build-system]
 requires = ["setuptools"]
