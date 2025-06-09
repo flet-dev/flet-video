@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased] - 2025-mm-dd
 
-## Added
+### Added
 
 - Deployed online documentation: https://flet-dev.github.io/flet-video/
 

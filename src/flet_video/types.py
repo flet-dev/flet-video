@@ -97,7 +97,7 @@ class VideoSubtitleTrack:
     """
     The subtitle source. 
     
-    It can be one of the following:
+    Supported values:
         - A URL (e.g. "https://example.com/subs.srt" or "www.example.com/sub.vtt")
         - An absolute local file path (not supported on the web platform)
         - A raw subtitle text string (e.g. the full contents of an SRT/VTT file)

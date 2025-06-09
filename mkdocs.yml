@@ -2,7 +2,7 @@
 site_name: "flet-video"
 site_url: https://flet-dev.github.io/flet-video/
 site_author: Flet Contributors
-site_description:
+site_description: A cross-platform video player for Flet apps.
 
 # Repository
 edit_uri: edit/main/docs/
@@ -63,7 +63,7 @@ extra:
     provider: mike
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/flet-dev/flet-permission-handler
+      link: https://github.com/flet-dev
     - icon: fontawesome/brands/discord
       link: https://discord.gg/bCFXYgZR3b
     - icon: fontawesome/brands/x-twitter
@@ -92,6 +92,11 @@ validation:
   unrecognized_links: warn
   anchors: warn
 
+# Watch
+watch:
+  - docs
+  - src
+
 # Plugins
 plugins:
   # - footnotes
@@ -101,10 +106,11 @@ plugins:
       alias_type: symlink
   - glightbox
   - mkdocstrings:
-      default_handler: python
+      default_handler: python_xref
       handlers:
-        python:
+        python_xref:
           options:
+            relative_crossrefs: true
             docstring_style: google
             show_signature_annotations: true
             signature_crossrefs: true

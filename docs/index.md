@@ -4,7 +4,7 @@
 [![downloads](https://static.pepy.tech/badge/flet-video/month)](https://pepy.tech/project/flet-video)
 [![license](https://img.shields.io/github/license/flet-dev/flet-video.svg)](https://github.com/flet-dev/flet-video/blob/main/LICENSE)
 
-A cross-platform video player for Flet applications.
+A cross-platform video player for Flet apps.
 
 It is based on the [media_kit](https://pub.dev/packages/media_kit) Flutter package.
 

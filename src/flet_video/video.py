@@ -95,9 +95,11 @@ class Video(ft.ConstrainedControl):
     """
     Defines the volume of the video player.
     
-    Value ranges from `0.0` to `100.0`, where `0.0` is muted and `100.0` is the maximum volume.
-    
     Defaults to `100.0`.
+    
+    Note:
+        It's value ranges between `0.0` to `100.0` (inclusive), where `0.0` is muted and `100.0` is the maximum volume.
+        An exception will be raised if the value is outside this range.
     """
 
     playback_rate: ft.Number = 1.0
@@ -118,10 +120,11 @@ class Video(ft.ConstrainedControl):
     """
     Filter quality of the texture used to render the video output.
     
-    Note: Android was reported to show blurry images when using `ft.FilterQuality.HIGH`. 
-    Prefer the usage of `ft.FilterQuality.MEDIUM` on this platform.
-    
     Defaults to `ft.FilterQuality.LOW`.
+    
+    Note: 
+        Android was reported to show blurry images when using `ft.FilterQuality.HIGH`. 
+        Prefer the usage of `ft.FilterQuality.MEDIUM` on this platform.
     """
 
     pause_upon_entering_background_mode: bool = True
@@ -294,20 +297,30 @@ class Video(ft.ConstrainedControl):
         self.playlist.pop(media_index)
 
     async def is_playing_async(self) -> bool:
-        """Returns `True` if the video player is currently playing, `False` otherwise."""
+        """
+        Returns:
+            `True` if the video player is currently playing, `False` otherwise.
+        """
         return await self._invoke_method_async("is_playing")
 
     async def is_completed_async(self) -> bool:
         """
-        Returns `True` if video player has reached the end of
-        the currently playing media, `False` otherwise.
+        Returns:
+            `True` if video player has reached the end of
+            the currently playing media, `False` otherwise.
         """
         return await self._invoke_method_async("is_completed")
 
     async def get_duration_async(self) -> ft.Duration:
-        """Returns the duration of the currently playing media."""
+        """
+        Returns:
+            The duration of the currently playing media.
+        """
         return await self._invoke_method_async("get_duration")
 
     async def get_current_position_async(self) -> ft.Duration:
-        """Returns the current position of the currently playing media."""
+        """
+        Returns:
+            The current position of the currently playing media.
+        """
         return await self._invoke_method_async("get_current_position")
