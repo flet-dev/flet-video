@@ -70,17 +70,17 @@ class VideoConfiguration:
     Defaults to `True`.
     """
 
-    width: ft.OptionalNumber = None
+    width: Optional[ft.Number] = None
     """
     The fixed width for the video output.
     """
 
-    height: ft.OptionalNumber = None
+    height: Optional[ft.Number] = None
     """
     The fixed height for the video output.
     """
 
-    scale: ft.OptionalNumber = 1.0
+    scale: ft.Number = 1.0
     """
     The scale for the video output. 
     Specifying this option will cause `width` & `height` to be ignored.
@@ -112,10 +112,10 @@ class VideoSubtitleTrack:
     channels_count: Optional[int] = None
     channels: Optional[str] = None
     sample_rate: Optional[int] = None
-    fps: ft.OptionalNumber = None
+    fps: Optional[ft.Number] = None
     bitrate: Optional[int] = None
     rotate: Optional[int] = None
-    par: ft.OptionalNumber = None
+    par: Optional[ft.Number] = None
     audio_channels: Optional[int] = None
     album_art: Optional[bool] = None
     codec: Optional[str] = None
@@ -149,7 +149,7 @@ class VideoSubtitleConfiguration:
     )
     """The text style to be used for the subtitles."""
 
-    text_scale_factor: ft.OptionalNumber = 1.0
+    text_scale_factor: ft.Number = 1.0
     """
     Defines the scale factor for the subtitle text.
     
