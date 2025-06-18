@@ -73,7 +73,7 @@ Map<String, dynamic> subtitleConfigurationFromJSON(
             fontWeight: FontWeight.normal,
             backgroundColor: Color(0xaa000000)),
     visible: parseBool(json["visible"], true)!,
-    textScaleFactor: parseDouble(json["text_scale_factor"]),
+    textScaler: TextScaler.linear(parseDouble(json["text_scale_factor"], 1)!),
     textAlign: parseTextAlign(json["text_align"], TextAlign.center)!,
     padding: edgeInsetsFromJson(json["padding"]) ??
         const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 24.0),
