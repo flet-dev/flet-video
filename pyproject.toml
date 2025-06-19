@@ -34,6 +34,7 @@ docs = [
     "markdown>=3.6",
     "pymdown-extensions",
     "mkdocs-glightbox",
+    "mkdocs-section-index",
     "pygments>=2.16",
 ]
 
@@ -43,3 +44,35 @@ flet = { git = "https://github.com/flet-dev/flet", subdirectory = "sdk/python/pa
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
+
+[tool.ruff]
+line-length = 88
+target-version = "py39"
+fix = true
+show-fixes = true
+
+[tool.ruff.lint]
+select = [
+    # pycodestyle
+    "E",
+    # Pyflakes
+    "F",
+    # pyupgrade
+    "UP",
+    # flake8-bugbear
+    "B",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I"
+]
+ignore = [
+    # Pyflakes
+    "F401", # unused import
+]
+preview = true
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"

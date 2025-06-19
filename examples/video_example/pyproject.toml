@@ -1,7 +1,7 @@
 [project]
-name = "video_example"
+name = "flet-video-example"
 version = "1.0.0"
-description = ""
+description = "flet-video-example"
 readme = "README.md"
 license = "Apache-2.0"
 requires-python = ">=3.10"
@@ -13,26 +13,9 @@ dependencies = [
 # Docs: https://flet.dev/docs/publish
 [tool.flet]
 org = "com.mycompany"
-product = "Flet Video Example"
+product = "flet-video-example"
 company = "Flet"
 copyright = "Copyright (C) 2025 by Flet"
 
 [tool.flet.app]
 path = "src"
-
-[tool.flet.dev_packages]
-flet-video = "../.."
-flet = "../../../flet/sdk/python/packages/flet"
-
-[tool.uv]
-dev-dependencies = [
-    "flet",
-    "flet-cli",
-    "flet-desktop",
-]
-
-[tool.uv.sources]
-flet-video = { path = "../../", editable = true }
-flet = { git = "https://github.com/flet-dev/flet", subdirectory = "sdk/python/packages/flet", rev = "v1" }
-flet-cli = { git = "https://github.com/flet-dev/flet", subdirectory = "sdk/python/packages/flet-cli", rev = "v1" }
-flet-desktop = { git = "https://github.com/flet-dev/flet", subdirectory = "sdk/python/packages/flet-desktop", rev = "v1" }

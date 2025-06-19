@@ -66,8 +66,6 @@ class VideoConfiguration:
     """
     Whether to enable hardware acceleration.
     When disabled, may cause battery drain, device heating, and high CPU usage.
-    
-    Defaults to `True`.
     """
 
     width: Optional[ft.Number] = None
@@ -84,8 +82,6 @@ class VideoConfiguration:
     """
     The scale for the video output. 
     Specifying this option will cause `width` & `height` to be ignored.
-    
-    Defaults to `1.0`.
     """
 
 
@@ -152,15 +148,11 @@ class VideoSubtitleConfiguration:
     text_scale_factor: ft.Number = 1.0
     """
     Defines the scale factor for the subtitle text.
-    
-    Defaults to `1.0`.
     """
 
     text_align: ft.TextAlign = ft.TextAlign.CENTER
     """
     The text alignment to be used for the subtitles.
-    
-    Defaults to `ft.TextAlign.CENTER`.
     """
 
     padding: ft.PaddingValue = field(
@@ -168,13 +160,9 @@ class VideoSubtitleConfiguration:
     )
     """
     The padding to be used for the subtitles.
-    
-    Defaults to `ft.Padding(left=16.0, top=0.0, right=16.0, bottom=24.0)`.
     """
 
     visible: bool = True
     """
     Whether the subtitles should be visible or not.
-    
-    Defaults to `True`.
     """

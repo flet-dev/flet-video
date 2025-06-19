@@ -24,59 +24,43 @@ class Video(ft.ConstrainedControl):
     playlist: List[VideoMedia] = field(default_factory=list)
     """
     A list of `VideoMedia`s representing the video files to be played.
-    
-    Defaults to `[]`.
     """
 
     title: str = "flet-video"
     """
     Defines the name of the underlying window & process for native backend. 
     This is visible inside the windows' volume mixer.
-    
-    Defaults to `"flet-video"`.
     """
 
     fit: ft.BoxFit = ft.BoxFit.CONTAIN
     """
     The box fit to use for the video.
-    
-    Defaults to `ft.BoxFit.CONTAIN`.
     """
 
     fill_color: ft.ColorValue = ft.Colors.BLACK
     """
     Defines the color used to fill the video background.
-    
-    Defaults to `ft.Colors.BLACK`.
     """
 
     wakelock: bool = True
     """
     Whether to acquire wake lock while playing the video. 
     When `True`, device's display will not go to standby/sleep while the video is playing.
-    
-    Defaults to `True`.
     """
 
     autoplay: bool = False
     """
     Whether the video should start playing automatically.
-    
-    Defaults to `False`.
     """
 
     show_controls: bool = True
     """
     Whether to show the video player controls.
-    
-    Defaults to `True`.
     """
 
     muted: bool = False
     """
     Defines whether the video player should be started in muted state.
-    
-    Defaults to `False`.
     """
 
     playlist_mode: Optional[PlaylistMode] = None
@@ -87,15 +71,11 @@ class Video(ft.ConstrainedControl):
     shuffle_playlist: bool = False
     """
     Defines whether the playlist should be shuffled.
-    
-    Defaults to `False`.
     """
 
     volume: ft.Number = 100.0
     """
     Defines the volume of the video player.
-    
-    Defaults to `100.0`.
     
     Note:
         It's value ranges between `0.0` to `100.0` (inclusive), where `0.0` is muted and `100.0` is the maximum volume.
@@ -105,22 +85,16 @@ class Video(ft.ConstrainedControl):
     playback_rate: ft.Number = 1.0
     """
     Defines the playback rate of the video player.
-    
-    Defaults to `1.0`.
     """
 
     alignment: ft.Alignment = field(default_factory=lambda: ft.Alignment.center())
     """
     Defines the Alignment of the viewport.
-    
-    Defaults to `ft.Alignment.center()`.
     """
 
     filter_quality: ft.FilterQuality = ft.FilterQuality.LOW
     """
     Filter quality of the texture used to render the video output.
-    
-    Defaults to `ft.FilterQuality.LOW`.
     
     Note: 
         Android was reported to show blurry images when using `ft.FilterQuality.HIGH`. 
@@ -130,23 +104,17 @@ class Video(ft.ConstrainedControl):
     pause_upon_entering_background_mode: bool = True
     """
     Whether to pause the video when application enters background mode.
-    
-    Defaults to `True`.
     """
 
     resume_upon_entering_foreground_mode: bool = False
     """
     Whether to resume the video when application enters foreground mode. 
     Has effect only if `pause_upon_entering_background_mode` is also set to `True`.
-    
-    Defaults to `False`.
     """
 
     pitch: ft.Number = 1.0
     """
     Defines the relative pitch of the video player.
-    
-    Defaults to `1.0`.
     """
 
     configuration: VideoConfiguration = field(
@@ -154,8 +122,6 @@ class Video(ft.ConstrainedControl):
     )
     """
     Additional configuration for the video player.
-    
-    Defaults to `VideoConfiguration()`.
     """
 
     subtitle_configuration: VideoSubtitleConfiguration = field(
@@ -163,8 +129,6 @@ class Video(ft.ConstrainedControl):
     )
     """
     Defines the subtitle configuration for the video player.
-    
-    Defaults to `VideoSubtitleConfiguration()`.
     """
 
     subtitle_track: Optional[VideoSubtitleTrack] = None
@@ -172,26 +136,26 @@ class Video(ft.ConstrainedControl):
     Defines the subtitle track for the video player.
     """
 
-    on_load: ft.OptionalControlEventCallable = None
+    on_load: ft.OptionalControlEventHandler["Video"] = None
     """Fires when the video player is initialized and ready for playback."""
 
-    on_enter_fullscreen: ft.OptionalControlEventCallable = None
+    on_enter_fullscreen: ft.OptionalControlEventHandler["Video"] = None
     """Fires when the video player enters fullscreen."""
 
-    on_exit_fullscreen: ft.OptionalControlEventCallable = None
+    on_exit_fullscreen: ft.OptionalControlEventHandler["Video"] = None
     """Fires when the video player exits fullscreen"""
 
-    on_error: ft.OptionalControlEventCallable = None
+    on_error: ft.OptionalControlEventHandler["Video"] = None
     """
     Fires when an error occurs.
     
     Event handler argument's `data` property contains information about the error.
     """
 
-    on_complete: ft.OptionalControlEventCallable = None
+    on_complete: ft.OptionalControlEventHandler["Video"] = None
     """Fires when a video player completes."""
 
-    on_track_change: ft.OptionalControlEventCallable = None
+    on_track_change: ft.OptionalControlEventHandler["Video"] = None
     """
     Fires when a video track changes.
     
