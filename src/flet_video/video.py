@@ -1,6 +1,6 @@
 import asyncio
 from dataclasses import field
-from typing import List, Optional
+from typing import Optional
 
 import flet as ft
 
@@ -19,9 +19,12 @@ __all__ = ["Video"]
 class Video(ft.ConstrainedControl):
     """
     A control that displays a video from a playlist.
+
+    Raises:
+        AssertionError: If the [`volume`][(c).] is not between `0.0` and `100.0` (inclusive).
     """
 
-    playlist: List[VideoMedia] = field(default_factory=list)
+    playlist: list[VideoMedia] = field(default_factory=list)
     """
     A list of `VideoMedia`s representing the video files to be played.
     """
@@ -221,19 +224,27 @@ class Video(ft.ConstrainedControl):
         return self._invoke_method_async("previous")
 
     def seek(self, position: ft.DurationValue):
-        """Seeks the currently playing `VideoMedia` from the `playlist` at the specified `position`."""
+        """
+        Seeks the currently playing `VideoMedia` from the `playlist` at the specified `position`.
+        """
         asyncio.create_task(self.seek_async(position))
 
     def seek_async(self, position: ft.DurationValue):
-        """Seeks the currently playing `VideoMedia` from the `playlist` at the specified `position`."""
+        """
+        Seeks the currently playing `VideoMedia` from the `playlist` at the specified `position`.
+        """
         return self._invoke_method_async("seek", {"position": position})
 
     def jump_to(self, media_index: int):
-        """Jumps to the `VideoMedia` at the specified `media_index` in the `playlist`."""
+        """
+        Jumps to the `VideoMedia` at the specified `media_index` in the `playlist`.
+        """
         asyncio.create_task(self.jump_to_async(media_index))
 
     async def jump_to_async(self, media_index: int):
-        """Jumps to the `VideoMedia` at the specified `media_index` in the `playlist`."""
+        """
+        Jumps to the `VideoMedia` at the specified `media_index` in the `playlist`.
+        """
         assert self.playlist[media_index], "media_index is out of range"
         if media_index < 0:
             # dart doesn't support negative indexes

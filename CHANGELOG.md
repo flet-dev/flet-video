@@ -17,9 +17,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Refactored `Video` control to use `@flet.control` dataclass-style definition.
 - Renamed `Video` event handler properties:
-  - `on_loaded` → `on_load`
-  - `on_completed` → `on_complete`
-  - `on_track_changed` → `on_track_change`
+    - `on_loaded` → `on_load`
+    - `on_completed` → `on_complete`
+    - `on_track_changed` → `on_track_change`
 
 ## [0.1.0] - 2025-01-15
 
