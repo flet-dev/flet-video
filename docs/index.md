@@ -37,14 +37,13 @@ To install the `flet-video` package and add it to your project dependencies:
     pip install flet-video  # (1)!
     ```
 
-    You will have to manually add this package to your `requirements.txt` or `pyproject.toml`.
+    1. After this, you will have to manually add this package to your `requirements.txt` or `pyproject.toml`.
 
 === "poetry"
     ```bash
     poetry add flet-video
     ```
 
-1. After this, you will have to manually add this package to your `requirements.txt` or `pyproject.toml`.
 
 ## Example
 
