@@ -40,9 +40,6 @@ docs = [
     "pygments>=2.16",
 ]
 
-[tool.uv.sources]
-flet = { git = "https://github.com/flet-dev/flet", subdirectory = "sdk/python/packages/flet", rev = "v1" }
-
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
