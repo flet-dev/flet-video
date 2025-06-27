@@ -48,19 +48,19 @@ def main(page: ft.Page):
 
     def handle_seek(e):
         video.seek(10000)
-        print(f"Video.seek(10000)")
+        print("Video.seek(10000)")
 
     def handle_add_media(e):
         video.playlist_add(random.choice(sample_media))
-        print(f"Video.playlist_add(random.choice(sample_media))")
+        print("Video.playlist_add(random.choice(sample_media))")
 
     def handle_remove_media(e):
         r = random.randint(0, len(video.playlist) - 1)
         video.playlist_remove(r)
-        print(f"Popped Item at index: {r} (position {r+1})")
+        print(f"Popped Item at index: {r} (position {r + 1})")
 
     def handle_jump(e):
-        print(f"Video.jump_to(0)")
+        print("Video.jump_to(0)")
         video.jump_to(0)
 
     sample_media = [

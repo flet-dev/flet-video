@@ -3,3 +3,4 @@ build/
 develop-eggs/
 dist/
 .DS_store
+.venv/

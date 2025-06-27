@@ -1,6 +1,3 @@
-import 'dart:convert';
-
-import 'package:collection/collection.dart';
 import 'package:flet/flet.dart';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
@@ -9,15 +6,9 @@ import 'package:media_kit_video/media_kit_video.dart';
 import 'utils/video.dart';
 
 class VideoControl extends StatefulWidget {
-  final Control? parent;
   final Control control;
-  final FletControlBackend backend;
 
-  const VideoControl(
-      {super.key,
-      required this.parent,
-      required this.control,
-      required this.backend});
+  const VideoControl({super.key, required this.control});
 
   @override
   State<VideoControl> createState() => _VideoControlState();
@@ -25,267 +16,203 @@ class VideoControl extends StatefulWidget {
 
 class _VideoControlState extends State<VideoControl> with FletStoreMixin {
   late final playerConfig = PlayerConfiguration(
-    title: widget.control.attrString("title", "Flet Video")!,
-    muted: widget.control.attrBool("muted", false)!,
-    pitch: widget.control.attrDouble("pitch") != null ? true : false,
-    ready: () {
-      if (widget.control.attrBool("onLoaded", false)!) {
-        widget.backend.triggerControlEvent(widget.control.id, "loaded");
-      }
-    },
+    title: widget.control.getString("title", "flet-video")!,
+    muted: widget.control.getBool("muted", false)!,
+    pitch: widget.control.getDouble("pitch") != null ? true : false,
+    ready: widget.control.getBool("on_loaded", false)!
+        ? () => widget.control.triggerEvent("loaded")
+        : null,
   );
 
-  late final Player player = Player(
-    configuration: playerConfig,
-  );
+  late final Player player = Player(configuration: playerConfig);
   late final videoControllerConfiguration = parseControllerConfiguration(
-      widget.control, "configuration", const VideoControllerConfiguration())!;
+      widget.control.get("configuration"),
+      const VideoControllerConfiguration())!;
   late final controller =
       VideoController(player, configuration: videoControllerConfiguration);
 
   @override
   void initState() {
     super.initState();
-    player.open(Playlist(parseVideoMedia(widget.control, "playlist")),
-        play: widget.control.attrBool("autoPlay", false)!);
+    widget.control.addInvokeMethodListener(_invokeMethod);
+    player.open(Playlist(parseVideoMedias(widget.control.get("playlist"), [])!),
+        play: widget.control.getBool("autoplay", false)!);
   }
 
   @override
   void dispose() {
+    widget.control.removeInvokeMethodListener(_invokeMethod);
     player.dispose();
     super.dispose();
   }
 
   void _onError(String? message) {
-    debugPrint("Video onError: $message");
-    widget.backend
-        .triggerControlEvent(widget.control.id, "error", message ?? "");
+    if (widget.control.getBool("on_error", false)!) {
+      widget.control.triggerEvent("error", message);
+    }
   }
 
-  void _onCompleted(String? message) {
-  debugPrint("Video onCompleted: $message");
-  widget.backend
-      .triggerControlEvent(widget.control.id, "completed", message ?? "");
-  }
-
-  void _onTrackChanged(String? message) {
-  debugPrint("Video onTrackChanged: $message");
-  widget.backend
-      .triggerControlEvent(widget.control.id, "track_changed", message ?? "");
+  Future<dynamic> _invokeMethod(String name, dynamic args) async {
+    debugPrint("Video.$name($args)");
+    switch (name) {
+      case "play":
+        await player.play();
+        break;
+      case "pause":
+        await player.pause();
+        break;
+      case "play_or_pause":
+        await player.playOrPause();
+        break;
+      case "stop":
+        await player.stop();
+        player.open(
+            Playlist(parseVideoMedias(widget.control.get("playlist"), [])!),
+            play: false);
+        break;
+      case "seek":
+        var position = parseDuration(args["position"]);
+        if (position != null) await player.seek(position);
+        break;
+      case "next":
+        await player.next();
+        break;
+      case "previous":
+        await player.previous();
+        break;
+      case "jump_to":
+        final mediaIndex = parseInt(args["media_index"]);
+        if (mediaIndex != null) await player.jump(mediaIndex);
+        break;
+      case "playlist_add":
+        var media = parseVideoMedia(args["media"]);
+        if (media != null) await player.add(media);
+        break;
+      case "playlist_remove":
+        final mediaIndex = parseInt(args["media_index"]);
+        if (mediaIndex != null) await player.remove(mediaIndex);
+        break;
+      case "is_playing":
+        return player.state.playing;
+      case "is_completed":
+        return player.state.completed;
+      case "get_duration":
+        return player.state.duration;
+      case "get_current_position":
+        return player.state.position;
+      default:
+        throw Exception("Unknown Video method: $name");
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    debugPrint("Video build: ${widget.control.id}");
+    debugPrint("Video XXX build: ${widget.control.id}");
 
-    FilterQuality filterQuality = parseFilterQuality(
-        widget.control.attrString("filterQuality"), FilterQuality.low)!;
+    var subtitleConfiguration = parseSubtitleConfiguration(
+        widget.control.get("subtitle_configuration"),
+        Theme.of(context),
+        const SubtitleViewConfiguration())!;
+    var subtitleTrack =
+        parseSubtitleTrack(widget.control.get("subtitle_track"), context);
 
-    return withPageArgs((context, pageArgs) {
-      SubtitleTrack? subtitleTrack;
-      Map<String, dynamic>? subtitleConfiguration = parseSubtitleConfiguration(
-          Theme.of(context), widget.control, "subtitleConfiguration");
-      if (subtitleConfiguration?["src"] != null) {
-        try {
-          var assetSrc = getAssetSrc(subtitleConfiguration?["src"],
-              pageArgs.pageUri!, pageArgs.assetsDir);
-          subtitleTrack = parseSubtitleTrack(
-              assetSrc,
-              subtitleConfiguration?["title"],
-              subtitleConfiguration?["language"]);
-        } catch (ex) {
-          _onError(ex.toString());
-          subtitleTrack = SubtitleTrack.no();
-        }
+    var volume = widget.control.getDouble("volume");
+    var pitch = widget.control.getDouble("pitch");
+    var playbackRate = widget.control.getDouble("playback_rate");
+    var shufflePlaylist = widget.control.getBool("shuffle_playlist");
+    var showControls = widget.control.getBool("show_controls", true)!;
+    var playlistMode =
+        parsePlaylistMode(widget.control.getString("playlist_mode"));
+
+    // previous values
+    final prevVolume = widget.control.getDouble("_volume");
+    final prevPitch = widget.control.getDouble("_pitch");
+    final prevPlaybackRate = widget.control.getDouble("_playback_rate");
+    final prevShufflePlaylist = widget.control.getBool("_shuffle_playlist");
+    final PlaylistMode? prevPlaylistMode = widget.control.get("_playlist_mode");
+    final SubtitleTrack? prevSubtitleTrack =
+        widget.control.get("_subtitleTrack");
+
+    Video video = Video(
+      controller: controller,
+      wakelock: widget.control.getBool("wakelock", true)!,
+      controls: showControls ? AdaptiveVideoControls : null,
+      pauseUponEnteringBackgroundMode:
+          widget.control.getBool("pause_upon_entering_background_mode", true)!,
+      resumeUponEnteringForegroundMode: widget.control
+          .getBool("resume_upon_entering_foreground_mode", false)!,
+      alignment: widget.control.getAlignment("alignment", Alignment.center)!,
+      fit: widget.control.getBoxFit("fit", BoxFit.contain)!,
+      filterQuality:
+          widget.control.getFilterQuality("filter_quality", FilterQuality.low)!,
+      subtitleViewConfiguration: subtitleConfiguration,
+      fill: widget.control.getColor("fill_color", context, Colors.black)!,
+      onEnterFullscreen: widget.control.getBool("on_enter_fullscreen", false)!
+          ? () async => widget.control.triggerEvent("enter_fullscreen")
+          : defaultEnterNativeFullscreen,
+      onExitFullscreen: widget.control.getBool("on_exit_fullscreen", false)!
+          ? () async => widget.control.triggerEvent("exit_fullscreen")
+          : defaultExitNativeFullscreen,
+    );
+
+    () async {
+      if (volume != null &&
+          volume != prevVolume &&
+          volume >= 0 &&
+          volume <= 100) {
+        widget.control.updateProperties({"_volume": volume}, python: false);
+        await player.setVolume(volume);
       }
 
-      SubtitleViewConfiguration? subtitleViewConfiguration =
-          subtitleConfiguration?["subtitleViewConfiguration"];
+      if (pitch != null && pitch != prevPitch) {
+        widget.control.updateProperties({"_pitch": pitch}, python: false);
+        await player.setPitch(pitch);
+      }
 
-      bool onError = widget.control.attrBool("onError", false)!;
-      bool onCompleted = widget.control.attrBool("onCompleted", false)!;
-      bool onTrackChanged = widget.control.attrBool("onTrackChanged", false)!;
+      if (playbackRate != null && playbackRate != prevPlaybackRate) {
+        widget.control
+            .updateProperties({"_playbackRate": playbackRate}, python: false);
+        await player.setRate(playbackRate);
+      }
 
-      double? volume = widget.control.attrDouble("volume");
-      double? pitch = widget.control.attrDouble("pitch");
-      double? playbackRate = widget.control.attrDouble("playbackRate");
-      bool? shufflePlaylist = widget.control.attrBool("shufflePlaylist");
-      bool? showControls = widget.control.attrBool("showControls", true)!;
-      PlaylistMode? playlistMode = PlaylistMode.values.firstWhereOrNull((e) =>
-          e.name.toLowerCase() ==
-          widget.control.attrString("playlistMode")?.toLowerCase());
+      if (shufflePlaylist != null && shufflePlaylist != prevShufflePlaylist) {
+        widget.control.updateProperties({"_shufflePlaylist": shufflePlaylist},
+            python: false);
+        await player.setShuffle(shufflePlaylist);
+      }
 
-      final double? prevVolume = widget.control.state["volume"];
-      final double? prevPitch = widget.control.state["pitch"];
-      final double? prevPlaybackRate = widget.control.state["playbackRate"];
-      final bool? prevShufflePlaylist = widget.control.state["shufflePlaylist"];
-      final PlaylistMode? prevPlaylistMode =
-          widget.control.state["playlistMode"];
-      final SubtitleTrack? prevSubtitleTrack =
-          widget.control.state["subtitleTrack"];
+      if (playlistMode != null && playlistMode != prevPlaylistMode) {
+        widget.control
+            .updateProperties({"_playlistMode": playlistMode}, python: false);
+        await player.setPlaylistMode(playlistMode);
+      }
 
-      Video? video = Video(
-        controller: controller,
-        wakelock: widget.control.attrBool("wakelock", true)!,
-        controls: showControls ? AdaptiveVideoControls : null,
-        pauseUponEnteringBackgroundMode:
-            widget.control.attrBool("pauseUponEnteringBackgroundMode", true)!,
-        resumeUponEnteringForegroundMode:
-            widget.control.attrBool("resumeUponEnteringForegroundMode", false)!,
-        alignment:
-            parseAlignment(widget.control, "alignment", Alignment.center)!,
-        fit: parseBoxFit(widget.control.attrString("fit"), BoxFit.contain)!,
-        filterQuality: filterQuality,
-        subtitleViewConfiguration:
-            subtitleViewConfiguration ?? const SubtitleViewConfiguration(),
-        fill: parseColor(Theme.of(context),
-                widget.control.attrString("fillColor", "")!) ??
-            const Color(0xFF000000),
-        onEnterFullscreen: widget.control.attrBool("onEnterFullscreen", false)!
-            ? () async {
-                widget.backend.triggerControlEvent(
-                    widget.control.id, "enter_fullscreen", "");
-              }
-            : defaultEnterNativeFullscreen,
-        onExitFullscreen: widget.control.attrBool("onExitFullscreen", false)!
-            ? () async {
-                widget.backend.triggerControlEvent(
-                    widget.control.id, "exit_fullscreen", "");
-              }
-            : defaultExitNativeFullscreen,
-      );
+      if (subtitleTrack != null && subtitleTrack != prevSubtitleTrack) {
+        widget.control
+            .updateProperties({"_subtitleTrack": subtitleTrack}, python: false);
+        await player.setSubtitleTrack(subtitleTrack);
+      }
+    }();
 
-      () async {
-        if (volume != null &&
-            volume != prevVolume &&
-            volume >= 0 &&
-            volume <= 100) {
-          widget.control.state["volume"] = volume;
-          debugPrint("Video.setVolume($volume)");
-          await player.setVolume(volume);
-        }
-
-        if (pitch != null && pitch != prevPitch) {
-          widget.control.state["pitch"] = pitch;
-          debugPrint("Video.setPitch($pitch)");
-          await player.setPitch(pitch);
-        }
-
-        if (playbackRate != null && playbackRate != prevPlaybackRate) {
-          widget.control.state["playbackRate"] = playbackRate;
-          debugPrint("Video.setPlaybackRate($playbackRate)");
-          await player.setRate(playbackRate);
-        }
-
-        if (shufflePlaylist != null && shufflePlaylist != prevShufflePlaylist) {
-          widget.control.state["shufflePlaylist"] = shufflePlaylist;
-          debugPrint("Video.setShufflePlaylist($shufflePlaylist)");
-          await player.setShuffle(shufflePlaylist);
-        }
-
-        if (playlistMode != null && playlistMode != prevPlaylistMode) {
-          widget.control.state["playlistMode"] = playlistMode;
-          debugPrint("Video.setPlaylistMode($playlistMode)");
-          await player.setPlaylistMode(playlistMode);
-        }
-
-        if (subtitleTrack != null && subtitleTrack != prevSubtitleTrack) {
-          widget.control.state["subtitleTrack"] = subtitleTrack;
-          debugPrint("Video.setSubtitleTrack($subtitleTrack)");
-          await player.setSubtitleTrack(subtitleTrack);
-        }
-
-        widget.backend.subscribeMethods(widget.control.id,
-            (methodName, args) async {
-          switch (methodName) {
-            case "play":
-              debugPrint("Video.play($hashCode)");
-              await player.play();
-              break;
-            case "pause":
-              debugPrint("Video.pause($hashCode)");
-              await player.pause();
-              break;
-            case "play_or_pause":
-              debugPrint("Video.playOrPause($hashCode)");
-              await player.playOrPause();
-              break;
-            case "stop":
-              debugPrint("Video.stop($hashCode)");
-              await player.stop();
-              player.open(Playlist(parseVideoMedia(widget.control, "playlist")),
-                  play: false);
-              break;
-            case "seek":
-              debugPrint("Video.jump($hashCode)");
-              await player.seek(Duration(
-                  milliseconds: int.tryParse(args["position"] ?? "") ?? 0));
-              break;
-            case "next":
-              debugPrint("Video.next($hashCode)");
-              await player.next();
-              break;
-            case "previous":
-              debugPrint("Video.previous($hashCode)");
-              await player.previous();
-              break;
-            case "jump_to":
-              debugPrint("Video.jump($hashCode)");
-              await player.jump(parseInt(args["media_index"], 0)!);
-              break;
-            case "playlist_add":
-              debugPrint("Video.add($hashCode)");
-              Map<String, dynamic> extras =
-                  json.decode(args["extras"]!.replaceAll("'", "\""));
-              Map<String, String> httpHeaders =
-                  (json.decode(args["http_headers"]!.replaceAll("'", "\""))
-                          as Map)
-                      .map((key, value) =>
-                          MapEntry(key.toString(), value.toString()));
-              await player.add(Media(args["resource"]!,
-                  extras: extras.isNotEmpty ? extras : null,
-                  httpHeaders: httpHeaders.isNotEmpty ? httpHeaders : null));
-              break;
-            case "playlist_remove":
-              debugPrint("Video.remove($hashCode)");
-              await player.remove(parseInt(args["media_index"], 0)!);
-              break;
-            case "is_playing":
-              debugPrint("Video.isPlaying($hashCode)");
-              return player.state.playing.toString();
-            case "is_completed":
-              debugPrint("Video.isCompleted($hashCode)");
-              return player.state.completed.toString();
-            case "get_duration":
-              debugPrint("Video.getDuration($hashCode)");
-              return player.state.duration.inMilliseconds.toString();
-            case "get_current_position":
-              debugPrint("Video.getCurrentPosition($hashCode)");
-              return player.state.position.inMilliseconds.toString();
-          }
-          return null;
-        });
-      }();
-
-      player.stream.error.listen((event) {
-        if (onError) {
-          _onError(event.toString());
-        }
-      });
-
-      player.stream.completed.listen((event) {
-        if (onCompleted) {
-          _onCompleted(event.toString());
-        }
-      });
-
-      player.stream.playlist.listen((event) {
-        if (onTrackChanged) {
-          _onTrackChanged(event.index.toString());
-        }
-      });
-
-      return constrainedControl(context, video, widget.parent, widget.control);
+    // listen to errors
+    player.stream.error.listen((event) {
+      _onError(event);
     });
+
+    // listen to completion
+    player.stream.completed.listen((event) {
+      if (widget.control.getBool("on_complete", false)!) {
+        widget.control.triggerEvent("complete", event);
+      }
+    });
+
+    // listen to track changes
+    player.stream.playlist.listen((event) {
+      if (widget.control.getBool("on_track_change", false)!) {
+        widget.control.triggerEvent("track_change", event.index);
+      }
+    });
+
+    return ConstrainedControl(control: widget.control, child: video);
   }
 }
