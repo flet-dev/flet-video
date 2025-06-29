@@ -1,5 +1,5 @@
 # Project information
-site_name: "flet-video Documentation"
+site_name: "flet-video"
 site_url: https://flet-dev.github.io/flet-video/
 site_author: Flet Contributors
 site_description: A cross-platform video player for Flet apps.
