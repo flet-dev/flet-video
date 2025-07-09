@@ -21,9 +21,9 @@ dependencies:
   #  flet: 0.70.0
   flet:
     git:
-      path: packages/flet
-      ref: v1
       url: https://github.com/flet-dev/flet.git
+      path: packages/flet
+      ref: main
 
 dev_dependencies:
   flutter_test:
