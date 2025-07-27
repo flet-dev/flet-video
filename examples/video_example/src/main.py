@@ -100,7 +100,7 @@ def main(page: ft.Page):
             autoplay=False,
             filter_quality=ft.FilterQuality.HIGH,
             muted=False,
-            on_loaded=lambda e: print("Video loaded successfully!"),
+            on_load=lambda e: print("Video loaded successfully!"),
             on_enter_fullscreen=lambda e: print("Video entered fullscreen!"),
             on_exit_fullscreen=lambda e: print("Video exited fullscreen!"),
         ),

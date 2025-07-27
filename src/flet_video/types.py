@@ -1,13 +1,13 @@
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Dict, Optional
+from typing import Optional
 
 import flet as ft
 
 __all__ = [
     "PlaylistMode",
-    "VideoMedia",
     "VideoConfiguration",
+    "VideoMedia",
     "VideoSubtitleConfiguration",
     "VideoSubtitleTrack",
 ]
@@ -33,10 +33,10 @@ class VideoMedia:
     resource: str
     """URI of the media resource."""
 
-    http_headers: Optional[Dict[str, str]] = None
+    http_headers: Optional[dict[str, str]] = None
     """HTTP headers to be used for the media resource."""
 
-    extras: Optional[Dict[str, str]] = None
+    extras: Optional[dict[str, str]] = None
     """Additional metadata for the media resource."""
 
 
@@ -46,8 +46,9 @@ class VideoConfiguration:
 
     output_driver: Optional[str] = None
     """
-    Sets the [--vo](https://mpv.io/manual/stable/#options-vo) property on native backend.
-    
+    Sets the [--vo](https://mpv.io/manual/stable/#options-vo) property
+    on native backend.
+
     The default value is platform dependent:
         - Windows, GNU/Linux, macOS & iOS : `"libmpv"`
         - Android: `"gpu"`
@@ -55,8 +56,9 @@ class VideoConfiguration:
 
     hardware_decoding_api: Optional[str] = None
     """
-    Sets the [--hwdec](https://mpv.io/manual/stable/#options-hwdec) property on native backend.
-    
+    Sets the [--hwdec](https://mpv.io/manual/stable/#options-hwdec)
+    property on native backend.
+
     The default value is platform dependent:
         - Windows, GNU/Linux, macOS & iOS : `"auto"`
         - Android: `"auto-safe"`
@@ -80,8 +82,8 @@ class VideoConfiguration:
 
     scale: ft.Number = 1.0
     """
-    The scale for the video output. 
-    Specifying this option will cause `width` & `height` to be ignored.
+    The scale for the video output.
+    Specifying this option will cause [`width`][..] & [`height`][..] to be ignored.
     """
 
 
@@ -91,8 +93,8 @@ class VideoSubtitleTrack:
 
     src: str
     """
-    The subtitle source. 
-    
+    The subtitle source.
+
     Supported values:
         - A URL (e.g. "https://example.com/subs.srt" or "www.example.com/sub.vtt")
         - An absolute local file path (not supported on the web platform)
