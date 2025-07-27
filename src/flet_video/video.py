@@ -21,7 +21,8 @@ class Video(ft.ConstrainedControl):
     A control that displays a video from a playlist.
 
     Raises:
-        AssertionError: If the [`volume`][(c).] is not between `0.0` and `100.0` (inclusive).
+        AssertionError: If the [`volume`][(c).] is not between
+            `0.0` and `100.0` (inclusive).
     """
 
     playlist: list[VideoMedia] = field(default_factory=list)
@@ -31,7 +32,7 @@ class Video(ft.ConstrainedControl):
 
     title: str = "flet-video"
     """
-    Defines the name of the underlying window & process for native backend. 
+    Defines the name of the underlying window & process for native backend.
     This is visible inside the windows' volume mixer.
     """
 
@@ -47,8 +48,9 @@ class Video(ft.ConstrainedControl):
 
     wakelock: bool = True
     """
-    Whether to acquire wake lock while playing the video. 
-    When `True`, device's display will not go to standby/sleep while the video is playing.
+    Whether to acquire wake lock while playing the video.
+    When `True`, device's display will not go to standby/sleep while
+    the video is playing.
     """
 
     autoplay: bool = False
@@ -79,9 +81,10 @@ class Video(ft.ConstrainedControl):
     volume: ft.Number = 100.0
     """
     Defines the volume of the video player.
-    
+
     Note:
-        It's value ranges between `0.0` to `100.0` (inclusive), where `0.0` is muted and `100.0` is the maximum volume.
+        It's value ranges between `0.0` to `100.0` (inclusive), where `0.0`
+        is muted and `100.0` is the maximum volume.
         An exception will be raised if the value is outside this range.
     """
 
@@ -90,7 +93,7 @@ class Video(ft.ConstrainedControl):
     Defines the playback rate of the video player.
     """
 
-    alignment: ft.Alignment = field(default_factory=lambda: ft.Alignment.center())
+    alignment: ft.Alignment = field(default_factory=lambda: ft.Alignment.CENTER)
     """
     Defines the Alignment of the viewport.
     """
@@ -98,10 +101,12 @@ class Video(ft.ConstrainedControl):
     filter_quality: ft.FilterQuality = ft.FilterQuality.LOW
     """
     Filter quality of the texture used to render the video output.
-    
-    Note: 
-        Android was reported to show blurry images when using `ft.FilterQuality.HIGH`. 
-        Prefer the usage of `ft.FilterQuality.MEDIUM` on this platform.
+
+    Note:
+        Android was reported to show blurry images when using
+        [`FilterQuality.HIGH`][flet.FilterQuality.HIGH].
+        Prefer the usage of [`FilterQuality.MEDIUM`][flet.FilterQuality.MEDIUM]
+        on this platform.
     """
 
     pause_upon_entering_background_mode: bool = True
@@ -111,8 +116,9 @@ class Video(ft.ConstrainedControl):
 
     resume_upon_entering_foreground_mode: bool = False
     """
-    Whether to resume the video when application enters foreground mode. 
-    Has effect only if `pause_upon_entering_background_mode` is also set to `True`.
+    Whether to resume the video when application enters foreground mode.
+    Has effect only if [`pause_upon_entering_background_mode`][..] is also set to
+    `True`.
     """
 
     pitch: ft.Number = 1.0
@@ -139,35 +145,39 @@ class Video(ft.ConstrainedControl):
     Defines the subtitle track for the video player.
     """
 
-    on_load: ft.OptionalControlEventHandler["Video"] = None
+    on_load: Optional[ft.ControlEventHandler["Video"]] = None
     """Fires when the video player is initialized and ready for playback."""
 
-    on_enter_fullscreen: ft.OptionalControlEventHandler["Video"] = None
+    on_enter_fullscreen: Optional[ft.ControlEventHandler["Video"]] = None
     """Fires when the video player enters fullscreen."""
 
-    on_exit_fullscreen: ft.OptionalControlEventHandler["Video"] = None
+    on_exit_fullscreen: Optional[ft.ControlEventHandler["Video"]] = None
     """Fires when the video player exits fullscreen"""
 
-    on_error: ft.OptionalControlEventHandler["Video"] = None
+    on_error: Optional[ft.ControlEventHandler["Video"]] = None
     """
     Fires when an error occurs.
-    
-    Event handler argument's `data` property contains information about the error.
+
+    Event handler argument's [`data`][flet.Event.data] property contains
+    information about the error.
     """
 
-    on_complete: ft.OptionalControlEventHandler["Video"] = None
+    on_complete: Optional[ft.ControlEventHandler["Video"]] = None
     """Fires when a video player completes."""
 
-    on_track_change: ft.OptionalControlEventHandler["Video"] = None
+    on_track_change: Optional[ft.ControlEventHandler["Video"]] = None
     """
     Fires when a video track changes.
-    
-    Event handler argument's `data` property contains the index of the new track.
+
+    Event handler argument's [`data`][flet.Event.data] property contains
+    the index of the new track.
     """
 
     def before_update(self):
         super().before_update()
-        assert 0 <= self.volume <= 100, "volume must be between 0 and 100 inclusive"
+        assert 0 <= self.volume <= 100, (
+            f"volume must be between 0 and 100 inclusive, got {self.volume}"
+        )
 
     def play(self):
         """Starts playing the video."""
@@ -208,48 +218,58 @@ class Video(ft.ConstrainedControl):
         return self._invoke_method_async("stop")
 
     def next(self):
-        """Jumps to the next `VideoMedia` in the `playlist`."""
+        """Jumps to the next `VideoMedia` in the [`playlist`][..]."""
         asyncio.create_task(self.next_async())
 
     def next_async(self):
-        """Jumps to the next `VideoMedia` in the `playlist`."""
+        """Jumps to the next `VideoMedia` in the [`playlist`][..]."""
         return self._invoke_method_async("next")
 
     def previous(self):
-        """Jumps to the previous `VideoMedia` in the `playlist`."""
+        """Jumps to the previous `VideoMedia` in the [`playlist`][..]."""
         asyncio.create_task(self.previous_async())
 
     def previous_async(self):
-        """Jumps to the previous `VideoMedia` in the `playlist`."""
+        """Jumps to the previous `VideoMedia` in the [`playlist`][..]."""
         return self._invoke_method_async("previous")
 
     def seek(self, position: ft.DurationValue):
         """
-        Seeks the currently playing `VideoMedia` from the `playlist` at the specified `position`.
+        Seeks the currently playing `VideoMedia` from the
+        [`playlist`][..] at the specified `position`.
         """
         asyncio.create_task(self.seek_async(position))
 
     def seek_async(self, position: ft.DurationValue):
         """
-        Seeks the currently playing `VideoMedia` from the `playlist` at the specified `position`.
+        Seeks the currently playing `VideoMedia` from the
+        [`playlist`][..] at the specified `position`.
         """
-        return self._invoke_method_async("seek", {"position": position})
+        return self._invoke_method_async(
+            "seek",
+            {"position": position},
+        )
 
     def jump_to(self, media_index: int):
         """
-        Jumps to the `VideoMedia` at the specified `media_index` in the `playlist`.
+        Jumps to the `VideoMedia` at the specified `media_index`
+        in the [`playlist`][..].
         """
         asyncio.create_task(self.jump_to_async(media_index))
 
     async def jump_to_async(self, media_index: int):
         """
-        Jumps to the `VideoMedia` at the specified `media_index` in the `playlist`.
+        Jumps to the `VideoMedia` at the specified `media_index`
+        in the [`playlist`][..].
         """
         assert self.playlist[media_index], "media_index is out of range"
         if media_index < 0:
             # dart doesn't support negative indexes
             media_index = len(self.playlist) + media_index
-        await self._invoke_method_async("jump_to", {"media_index": media_index})
+        await self._invoke_method_async(
+            method_name="jump_to",
+            arguments={"media_index": media_index},
+        )
 
     def playlist_add(self, media: VideoMedia):
         """Appends/Adds the provided `media` to the `playlist`."""
@@ -258,7 +278,10 @@ class Video(ft.ConstrainedControl):
     async def playlist_add_async(self, media: VideoMedia):
         """Appends/Adds the provided `media` to the `playlist`."""
         assert media.resource, "media has no resource"
-        await self._invoke_method_async("playlist_add", {"media": media})
+        await self._invoke_method_async(
+            method_name="playlist_add",
+            arguments={"media": media},
+        )
         self.playlist.append(media)
 
     def playlist_remove(self, media_index: int):
@@ -268,7 +291,10 @@ class Video(ft.ConstrainedControl):
     async def playlist_remove_async(self, media_index: int):
         """Removes the provided `media` from the `playlist`."""
         assert self.playlist[media_index], "index out of range"
-        await self._invoke_method_async("playlist_remove", {"media_index": media_index})
+        await self._invoke_method_async(
+            method_name="playlist_remove",
+            arguments={"media_index": media_index},
+        )
         self.playlist.pop(media_index)
 
     async def is_playing_async(self) -> bool:
@@ -282,7 +308,7 @@ class Video(ft.ConstrainedControl):
         """
         Returns:
             `True` if video player has reached the end of
-            the currently playing media, `False` otherwise.
+                the currently playing media, `False` otherwise.
         """
         return await self._invoke_method_async("is_completed")
 
