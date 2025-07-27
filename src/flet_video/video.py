@@ -308,7 +308,7 @@ class Video(ft.ConstrainedControl):
         """
         Returns:
             `True` if video player has reached the end of
-            the currently playing media, `False` otherwise.
+                the currently playing media, `False` otherwise.
         """
         return await self._invoke_method_async("is_completed")
 
