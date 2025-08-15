@@ -1,4 +1,3 @@
-import asyncio
 from dataclasses import field
 from typing import Optional
 
@@ -179,85 +178,44 @@ class Video(ft.ConstrainedControl):
             f"volume must be between 0 and 100 inclusive, got {self.volume}"
         )
 
-    def play(self):
+    async def play(self):
         """Starts playing the video."""
-        asyncio.create_task(self.play_async())
+        await self._invoke_method("play")
 
-    def play_async(self):
-        """Starts playing the video."""
-        return self._invoke_method_async("play")
-
-    def pause(self):
+    async def pause(self):
         """Pauses the video player."""
-        asyncio.create_task(self.pause_async())
+        await self._invoke_method("pause")
 
-    def pause_async(self):
-        """Pauses the video player."""
-        return self._invoke_method_async("pause")
-
-    def play_or_pause(self):
+    async def play_or_pause(self):
         """
         Cycles between play and pause states of the video player,
         i.e., plays if paused and pauses if playing.
         """
-        asyncio.create_task(self.play_or_pause_async())
+        await self._invoke_method("play_or_pause")
 
-    def play_or_pause_async(self):
-        """
-        Cycles between play and pause states of the video player,
-        i.e., plays if paused and pauses if playing.
-        """
-        return self._invoke_method_async("play_or_pause")
-
-    def stop(self):
+    async def stop(self):
         """Stops the video player."""
-        asyncio.create_task(self.stop_async())
+        await self._invoke_method("stop")
 
-    def stop_async(self):
-        """Stops the video player."""
-        return self._invoke_method_async("stop")
-
-    def next(self):
+    async def next(self):
         """Jumps to the next `VideoMedia` in the [`playlist`][..]."""
-        asyncio.create_task(self.next_async())
+        await self._invoke_method("next")
 
-    def next_async(self):
-        """Jumps to the next `VideoMedia` in the [`playlist`][..]."""
-        return self._invoke_method_async("next")
-
-    def previous(self):
+    async def previous(self):
         """Jumps to the previous `VideoMedia` in the [`playlist`][..]."""
-        asyncio.create_task(self.previous_async())
+        await self._invoke_method("previous")
 
-    def previous_async(self):
-        """Jumps to the previous `VideoMedia` in the [`playlist`][..]."""
-        return self._invoke_method_async("previous")
-
-    def seek(self, position: ft.DurationValue):
+    async def seek(self, position: ft.DurationValue):
         """
         Seeks the currently playing `VideoMedia` from the
         [`playlist`][..] at the specified `position`.
         """
-        asyncio.create_task(self.seek_async(position))
-
-    def seek_async(self, position: ft.DurationValue):
-        """
-        Seeks the currently playing `VideoMedia` from the
-        [`playlist`][..] at the specified `position`.
-        """
-        return self._invoke_method_async(
+        await self._invoke_method(
             "seek",
             {"position": position},
         )
 
-    def jump_to(self, media_index: int):
-        """
-        Jumps to the `VideoMedia` at the specified `media_index`
-        in the [`playlist`][..].
-        """
-        asyncio.create_task(self.jump_to_async(media_index))
-
-    async def jump_to_async(self, media_index: int):
+    async def jump_to(self, media_index: int):
         """
         Jumps to the `VideoMedia` at the specified `media_index`
         in the [`playlist`][..].
@@ -266,62 +224,54 @@ class Video(ft.ConstrainedControl):
         if media_index < 0:
             # dart doesn't support negative indexes
             media_index = len(self.playlist) + media_index
-        await self._invoke_method_async(
+        await self._invoke_method(
             method_name="jump_to",
             arguments={"media_index": media_index},
         )
 
-    def playlist_add(self, media: VideoMedia):
-        """Appends/Adds the provided `media` to the `playlist`."""
-        asyncio.create_task(self.playlist_add_async(media))
-
-    async def playlist_add_async(self, media: VideoMedia):
+    async def playlist_add(self, media: VideoMedia):
         """Appends/Adds the provided `media` to the `playlist`."""
         assert media.resource, "media has no resource"
-        await self._invoke_method_async(
+        await self._invoke_method(
             method_name="playlist_add",
             arguments={"media": media},
         )
         self.playlist.append(media)
 
-    def playlist_remove(self, media_index: int):
-        """Removes the provided `media` from the `playlist`."""
-        asyncio.create_task(self.playlist_remove_async(media_index))
-
-    async def playlist_remove_async(self, media_index: int):
+    async def playlist_remove(self, media_index: int):
         """Removes the provided `media` from the `playlist`."""
         assert self.playlist[media_index], "index out of range"
-        await self._invoke_method_async(
+        await self._invoke_method(
             method_name="playlist_remove",
             arguments={"media_index": media_index},
         )
         self.playlist.pop(media_index)
 
-    async def is_playing_async(self) -> bool:
+    async def is_playing(self) -> bool:
         """
         Returns:
             `True` if the video player is currently playing, `False` otherwise.
         """
-        return await self._invoke_method_async("is_playing")
+        return await self._invoke_method("is_playing")
 
-    async def is_completed_async(self) -> bool:
+    async def is_completed(self) -> bool:
         """
         Returns:
             `True` if video player has reached the end of
                 the currently playing media, `False` otherwise.
         """
-        return await self._invoke_method_async("is_completed")
+        return await self._invoke_method("is_completed")
 
-    async def get_duration_async(self) -> ft.Duration:
+    async def get_duration(self) -> ft.Duration:
         """
         Returns:
             The duration of the currently playing media.
         """
-        return await self._invoke_method_async("get_duration")
+        return await self._invoke_method("get_duration")
 
-    async def get_current_position_async(self) -> ft.Duration:
+    async def get_current_position(self) -> ft.Duration:
         """
         Returns:
             The current position of the currently playing media.
         """
-        return await self._invoke_method_async("get_current_position")
+        return await self._invoke_method("get_current_position")
