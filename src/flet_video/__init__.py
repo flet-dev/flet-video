@@ -1,11 +1,11 @@
-from .types import (
+from flet_video.types import (
     PlaylistMode,
     VideoConfiguration,
     VideoMedia,
     VideoSubtitleConfiguration,
     VideoSubtitleTrack,
 )
-from .video import Video
+from flet_video.video import Video
 
 __all__ = [
     "PlaylistMode",

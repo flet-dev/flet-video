@@ -3,7 +3,7 @@ from typing import Optional
 
 import flet as ft
 
-from .types import (
+from flet_video.types import (
     PlaylistMode,
     VideoConfiguration,
     VideoMedia,
