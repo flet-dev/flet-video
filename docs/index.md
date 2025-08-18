@@ -46,20 +46,18 @@ To install the `flet-video` package and add it to your project dependencies:
 
 ??? note "Windows Subsystem for Linux (WSL)"
     On WSL, you need to additionally install the [`libmpv`](https://github.com/mpv-player/mpv) library.
-    
-    If you receive `error while loading shared libraries: libmpv.so.1: cannot open shared object file: No such file or directory`, 
+
+    If you receive `error while loading shared libraries: libmpv.so.1: cannot open shared object file: No such file or directory`,
     it means `libmpv` library is not installed in your WSL environment.
-    
+
     To install it, run the following commands:
-    
+
     ```bash
     sudo apt update
     sudo apt install libmpv-dev libmpv2
     sudo ln -s /usr/lib/x86_64-linux-gnu/libmpv.so /usr/lib/libmpv.so.1
     ```
 
-## Example
+### Examples
 
-```python title="main.py"
---8<-- "examples/video_example/src/main.py"
-``` 
+See [these](video.md#examples).

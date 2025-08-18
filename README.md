@@ -25,7 +25,9 @@ This package supports the following platforms:
 | Android  |     ✅     |
 | Web      |     ✅     |
 
-## Installation
+## Usage
+
+### Installation
 
 To install the `flet-video` package and add it to your project dependencies:
 
@@ -45,6 +47,6 @@ To install the `flet-video` package and add it to your project dependencies:
     poetry add flet-video
     ```
 
-## Examples
+### Examples
 
-For examples, see [this](./examples)
+For examples, see [these](./examples).
