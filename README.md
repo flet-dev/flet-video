@@ -1,3 +1,7 @@
+# THIS PROJECT HAS BEEN ARCHIVED
+
+`flet-video` is now part of the main [Flet repository](https://github.com/flet-dev/flet/tree/main/sdk/python/packages/flet-video).
+
 # flet-video
 
 [![pypi](https://img.shields.io/pypi/v/flet-video.svg)](https://pypi.python.org/pypi/flet-video)
